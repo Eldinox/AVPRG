@@ -3,3 +3,9 @@ body
     background-color: #333333;
     color: #fff;
 }
+div
+{
+    border-style: double;
+    width: 50%;
+    padding-left: 50%;
+}
