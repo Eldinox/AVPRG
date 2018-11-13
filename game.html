@@ -10,12 +10,17 @@
     <script>
         const FPS = 30;
         const playerSize = 70;
-        const testpoint = 200;
-        const platformAmount = 15;
-        const scrollSpeed = 15;
+        const testpoint = 100;
+        const platformAmount = 1;
+        const scrollSpeed = 10;
+        var indicatorPosition = 0;
+        var message = "Press F to hit the gap";
+        var cooldown = false;
 
         var canv = document.getElementById("canvas");
         var ctx = canv.getContext("2d");
+        
+        ctx.font = "20px Arial";
 
         var player = 
         {
@@ -34,9 +39,21 @@
 
         function update()
         {
+            indicatorPosition = player.x * 2.2;
+            //message = platforms[0];
+            
+            
             //draw background
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canv.width, canv.height);
+
+            //draw backgroundplatform
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, player.y+playerSize / 20, canv.width, 30);
+
+            //draw text
+            ctx.fillStyle = "white";
+            ctx.fillText(message,10,50);
 
             //draw player
             ctx.fillStyle = "green";
@@ -72,11 +89,21 @@
             ctx.stroke();
         }
 
+        window.onkeydown = function(e)
+        {
+            var key = e.keyCode ? e.keyCode : e.which;
+
+            if(key == 70)
+            {
+                checkHit();
+            }
+        }
+
         function createFloor()
         {
             for(var i = 0; i < platformAmount; i++)
             {
-                platforms[i] = (i * 350) - 1;
+                platforms[i] = 1000;//(i * 2000) - 1;
             }
         }
         function calcFloor()
@@ -84,6 +111,13 @@
             for(var i = 0; i < platformAmount; i++)
             {
                 platforms[i] = platforms[i] - scrollSpeed;
+            }
+        }
+        function checkHit()
+        {
+            if(indicatorPosition > platforms[0] -100 && indicatorPosition < platforms[0] +100)
+            {
+                message = indicatorPosition - platforms[0];
             }
         }
     </script>
