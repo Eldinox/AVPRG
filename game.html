@@ -96,14 +96,7 @@
             if(key == 70)
             {
                 checkHit();
-		    var context = new AudioContext(),
-			sound = new Audio("sounds/sound1.wav"),
-			soundNote = context.createMediaElementSource(sound);
-			var gainNode = context.createGain();
-			gainNode.gain.value = 0.8;
-			soundNote.connect(gainNode);
-			gainNode.connect(context.destination);
-			sound.play();
+		   
             }
         }
 
