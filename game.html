@@ -7,6 +7,11 @@
 </head>
 <body>
     <canvas id=canvas width=1200 height=800></canvas>
+    
+	//Test Sound-Button
+    <button id="Button1" >1</button>
+	
+	
     <script>
         const FPS = 30;
         const playerSize = 70;
@@ -86,6 +91,26 @@
                 platforms[i] = platforms[i] - scrollSpeed;
             }
         }
+	    
+	//Play Soundfile
+
+        document.getElementById("Button1").addEventListener("click", function() {
+        
+        document.getElementById("outputText").innerHTML = "Test1";
+
+        var context = new AudioContext(),
+        sound = new Audio("sounds/sound1.wav"),
+        soundNote = context.createMediaElementSource(sound);
+        var gainNode = context.createGain();
+
+        gainNode.gain.value = 0.8;
+
+        soundNote.connect(gainNode);
+        gainNode.connect(context.destination);
+
+        sound.play();
+        });
+	    
     </script>
 </body>
 </html>
