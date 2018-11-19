@@ -96,6 +96,14 @@
             if(key == 70)
             {
                 checkHit();
+		    var context = new AudioContext(),
+			sound = new Audio("sounds/sound1.wav"),
+			soundNote = context.createMediaElementSource(sound);
+			var gainNode = context.createGain();
+			gainNode.gain.value = 0.8;
+			soundNote.connect(gainNode);
+			gainNode.connect(context.destination);
+			sound.play();
             }
         }
 
@@ -137,13 +145,13 @@
 	    
 	    // oscillator
 	    
-	    var context = new AudioContext();
+	  /*  var context = new AudioContext();
 	var oscillatorNode = context.createOscillator();
 	oscillatorNode.connect(context.destination);
 	oscillatorNode.frequency.value = 880;
 	oscillatorNode.type = "square";
 	oscillatorNode.start(context.currentTime);
-	oscillatorNode.stop(context.currentTime + 1);
+	oscillatorNode.stop(context.currentTime + 1);*/
 	    
 	// oscillator + gain
 	    
