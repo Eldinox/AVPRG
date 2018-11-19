@@ -94,7 +94,7 @@
 	    
 	//Play Soundfile
 
-        document.getElementById("Button1").addEventListener("click", function() {
+        /*document.getElementById("Button1").addEventListener("click", function() {
         
         document.getElementById("outputText").innerHTML = "Test1";
 
@@ -109,7 +109,43 @@
         gainNode.connect(context.destination);
 
         sound.play();
-        });
+        }); */
+	    
+	// oscillator
+	    var context = new AudioContext();
+		var oscillatorNode = context.createOscillator();
+		oscillatorNode.connect(context.destination);
+		oscillatorNode.frequency.value = 880;
+		oscillatorNode.type = "square";
+		oscillatorNode.start(context.currentTime);
+		oscillatorNode.stop(context.currentTime + 1);
+	    
+	    
+	    //Theremin
+	  /* var context = new AudioContext();
+		oscillator = null
+		mousedown = false
+		gainNode = context.createGain();
+
+	    document.body.addEventListener('mousedown', function(e){
+		mousedown = true;
+		oscillator = context.createOscillator();
+		oscillator.connect(gainNode);
+		gainNode.connect(context.destination);
+		calculateFreqAndGain(e);
+		oscillator.start(context.currentTime);
+	    });
+	    
+	 function calculateFreqAndGain(e) {
+		var maxFreq = 2000;
+		    minFreq = 20;
+		    maxGain = 1;
+		    minGain = 0;
+		oscillator.frequency.value = (((e.clientX / window.innerWidth) * maxFreq) + minFreq);
+		gainNode.gain.value = (((e.clientY / window.innerHeight) * maxGain) + minGain);
+		 
+		oscillator.frequency.setTargetAtTime((((e.clientX / window.innerWidth) * maxFreq) + minFreq), context.currentTime, 0.01);
+	    }*/
 	    
     </script>
 </body>
