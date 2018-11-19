@@ -144,7 +144,7 @@
 	    	oscillatorNode.frequency.value = 880;
 		oscillatorNode.type = "square";
 		gainNode.connect(context.destination);
-		gainNode.gain.value = 0.1;
+		gainNode.gain.value = 0.001;
 		oscillatorNode.start(context.currentTime);
 		oscillatorNode.stop(context.currentTime + 1);
 	    
