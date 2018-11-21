@@ -11,11 +11,14 @@
         const FPS = 30;
         const playerSize = 70;
         const testpoint = 100;
-        const platformAmount = 1;
+        const platformAmount = 10;
         const scrollSpeed = 10;
         var indicatorPosition = 0;
         var message = "Press F to hit the gap";
         var cooldown = false;
+        var activeGap = 0;
+        var firstClickDone = false;
+        var score = 0;
 
         var canv = document.getElementById("canvas");
         var ctx = canv.getContext("2d");
@@ -36,11 +39,11 @@
         setInterval(update, 1000 / FPS);
 
         createFloor();
+        indicatorPosition = player.x * 2.2;
 
         function update()
         {
-            indicatorPosition = player.x * 2.2;
-            //message = platforms[0];
+            //message = activeGap;
             
             
             //draw background
@@ -53,7 +56,7 @@
 
             //draw text
             ctx.fillStyle = "white";
-            ctx.fillText(message,10,50);
+            ctx.fillText(message, canv.width - 400, 50);
 
             //draw player
             ctx.fillStyle = "green";
@@ -71,11 +74,14 @@
 
             //calculate new platform position
             calcFloor();
+            calcNextGap();
 
             //draw platform
-            ctx.fillStyle = "blue";
             for(var i = 0; i < platformAmount; i++)
             {
+                if(i % 2 == 1)ctx.fillStyle = "blue";
+                else if(i % 2 == 0)ctx.fillStyle = "red";
+                
                 ctx.fillRect(platforms[i], player.y+playerSize / 20, testpoint, 30);
             }
 
@@ -93,10 +99,13 @@
         {
             var key = e.keyCode ? e.keyCode : e.which;
 
-            if(key == 70)
+            if(key == 70 && activeGap % 2 == 1)
             {
                 checkHit();
-		   
+            }
+            if(key == 74 && activeGap % 2 == 0)
+            {
+                checkHit();
             }
         }
 
@@ -104,7 +113,7 @@
         {
             for(var i = 0; i < platformAmount; i++)
             {
-                platforms[i] = 1000;//(i * 2000) - 1;
+                platforms[i] = 600 + (i * 400);
             }
         }
         function calcFloor()
@@ -116,9 +125,51 @@
         }
         function checkHit()
         {
-            if(indicatorPosition > platforms[0] -100 && indicatorPosition < platforms[0] +100)
+            var hitError;
+            var points;
+            var rewardMessage;
+            
+            if(indicatorPosition > platforms[activeGap] -51 && indicatorPosition < platforms[activeGap] +51)
             {
-                message = indicatorPosition - platforms[0];
+                if(cooldown == false)
+                {
+                    hitError = indicatorPosition - platforms[activeGap];
+                    if(Math.abs(hitError) < 11)
+                    {
+                        points = 300;
+                        rewardMessage = "Perfect Hit!";
+                    }
+                    else if(Math.abs(hitError) < 21)
+                    {
+                        points = 100;
+                        rewardMessage = "Good Hit!";
+                    }
+                    else if(Math.abs(hitError) < 31)
+                    {
+                        points = 50;
+                        rewardMessage = "Poor Hit!";
+                    }
+                    else
+                    {
+                        points = 0;
+                        rewardMessage = "Miss!";
+                    }
+                    score += points;
+                    message = hitError + " = " + rewardMessage + " (" + points + ") ----- Score: " + score;
+                    cooldown = true;
+                }
+            }
+            
+        }
+        function calcNextGap()
+        {
+            if((platforms[activeGap] + (platforms[activeGap + 1] - platforms[activeGap]) / 2) < indicatorPosition)
+            {
+                if(firstClickDone == false)
+                {
+                    activeGap++;
+                    cooldown = false;
+                }
             }
         }
 	    
