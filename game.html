@@ -11,7 +11,7 @@
         const FPS = 30;
         const playerSize = 70;
         const testpoint = 50;
-        const platformAmount = 100;
+        const platformAmount = 12;
         const scrollSpeed = 10;  //Pixel pro Frame
         var indicatorPosition = 0;
         var message = "Press F to hit the gap";
@@ -20,6 +20,12 @@
         var firstClickDone = false;
         var score = 0;
         var beatCount = 1;
+
+        /*var context = new AudioContext(),
+        clappSound = new Audio("sounds/We will Rock you/Clapp.mp3"),
+        //beatSound = new Audio("sounds/We will Rock you/Clapp.mp3")
+        /*soundNote1 = context.createMediaElementSource(clappSound);
+        soundNote2 = context.createMediaElementSource(beatSound);*/
 
         var canv = document.getElementById("canvas");
         var ctx = canv.getContext("2d");
@@ -106,13 +112,24 @@
         {
             var key = e.keyCode ? e.keyCode : e.which;
 
-            if(key == 70 && activeGap % 2 == 1)
+            if(key == 70)
             {
-                checkHit();
+                checkHit("F")
+                var context = new AudioContext(),
+                    sound = new Audio("sounds/We will Rock you/Beat.mp3"),
+                    soundNote = context.createMediaElementSource(sound);
+                    //var gainNode = context.createGain();
+                    //gainNode.gain.value = 0.8;
+                    //soundNote.connect(gainNode);
+                    //gainNode.connect(context.destination);
+                    sound.play();
             }
-            if(key == 74 && activeGap % 2 == 0)
+            if(key == 74)
             {
-                checkHit();
+                if(checkHit("J"))
+                {
+                    
+                };
             }
         }
 
@@ -145,28 +162,31 @@
                     {
                         points = 300;
                         rewardMessage = "Perfect Hit!";
+                        return true;
                     }
                     else if(Math.abs(hitError) < 21)
                     {
                         points = 100;
                         rewardMessage = "Good Hit!";
+                        return true;
                     }
                     else if(Math.abs(hitError) < 31)
                     {
                         points = 50;
                         rewardMessage = "Poor Hit!";
+                        return true;
                     }
                     else
                     {
                         points = 0;
                         rewardMessage = "Miss!";
+                        return false;
                     }
                     score += points;
                     message = hitError + " = " + rewardMessage + " (" + points + ") ----- Score: " + score;
                     cooldown = true;
                 }
             }
-            
         }
         function calcNextGap()
         {
@@ -177,6 +197,14 @@
                     activeGap++;
                     cooldown = false;
                 }
+                var context = new AudioContext(),
+                sound = new Audio("sounds/We will Rock you/Beat.mp3"),
+                soundNote = context.createMediaElementSource(sound);
+                var gainNode = context.createGain();
+                gainNode.gain.value = 0.8;
+                soundNote.connect(gainNode);
+                gainNode.connect(context.destination);
+                sound.play();
             }
         }
 	    
