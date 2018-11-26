@@ -48,14 +48,30 @@
         indicatorPosition = player.x * 2.2;
 	    
 	//background sound
-	var context = new AudioContext(),
+	/*var context = new AudioContext(),
         sound = new Audio(backgroundSound),
         soundNote = context.createMediaElementSource(sound);
         var gainNode = context.createGain();
         gainNode.gain.value = 0.8;
         soundNote.connect(gainNode);
         gainNode.connect(context.destination);
-        sound.play(context.currentTime +10);
+        sound.play(context.currentTime +10);*/
+	
+	var context = new AudioContext();
+	var request = new XMLHttpRequest();
+	request.open('GET', backgroundSoundvvvv, true);
+	request.responseType = 'arraybuffer';
+	request.onload = function () {
+		var undecodedAudio = request.response;
+		context.decodeAudioData(undecodedAudio, function (buffer) {
+			var sourceBuffer = context.createBufferSource();
+			sourceBuffer.buffer = buffer;
+			sourceBuffer.connect(context.destination);
+			sourceBuffer.start(context.currentTime);
+		});
+	};
+	    
+	request.send();    
 
         function update()
         {
