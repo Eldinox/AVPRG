@@ -59,7 +59,7 @@
 	
 	var context = new AudioContext();
 	var request = new XMLHttpRequest();
-	request.open('GET', backgroundSoundvvvv, true);
+	request.open('GET', backgroundSound, true);
 	request.responseType = 'arraybuffer';
 	request.onload = function () {
 		var undecodedAudio = request.response;
