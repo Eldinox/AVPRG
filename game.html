@@ -22,6 +22,8 @@
         var score = 0;
         var beatCount = 1;
         var data;
+	var backgroundSound = "sounds/We will Rock you/WWRY background.mp3";
+	//var backgroundDelay = 1;
 
         var canv = document.getElementById("canvas");
         var ctx = canv.getContext("2d");
@@ -44,6 +46,16 @@
 
         //createFloor();
         indicatorPosition = player.x * 2.2;
+	    
+	//background sound
+	var context = new AudioContext(),
+        sound = new Audio(backgroundSound),
+        soundNote = context.createMediaElementSource(sound);
+        var gainNode = context.createGain();
+        gainNode.gain.value = 0.8;
+        soundNote.connect(gainNode);
+        gainNode.connect(context.destination);
+        sound.play();
 
         function update()
         {
