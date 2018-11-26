@@ -34,3 +34,64 @@ h1
 {
     background-color: lightcoral;
 }
+.playKeys
+{
+    width: 5%;
+    height: 20%;
+    margin-left: 15%;
+    margin-top: 5%;
+    display: inline-block;
+    background-color: rgb(189, 207, 221);
+    text-align: center;
+    padding-top: 2%;
+    border-style: solid;
+    border-color: black;
+    border-width: 5px;
+    border-radius: 15px;
+    color: black;
+}
+#playKey1
+{
+    background-color: rgba(189, 207, 221, 0.2);
+}
+#playKey4
+{
+    background-color: rgba(189, 207, 221, 0.2);
+}
+#canvas
+{
+    width: 60%;
+    margin-left: 20%;
+}
+#overlay
+{
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 2;
+    cursor: pointer;
+}
+#text{
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    font-size: 50px;
+    color: white;
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    white-space: pre;
+}
+#keyUI
+{
+    background-color: rgb(24, 22, 22);
+    width: 70%;
+    margin-left: 15%;
+    height: 200px;
+}

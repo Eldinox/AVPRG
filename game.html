@@ -7,23 +7,41 @@
     <script type="text/javascript" src="wewillrockyou.js"></script>
 </head>
 <body>
+    <div id=overlay>
+        <div id=text>End Result</div>
+    </div>
     <canvas id=canvas width=1200 height=800></canvas>
+    <div id=keyUI>
+        <div class=playKeys id=playKey1>D</div>
+        <div class=playKeys id=playKey2>F</div>
+        <div class=playKeys id=playKey3>J</div>
+        <div class=playKeys id=playKey4>K</div>
+    </div>
     <script>
         const FPS = 30;
         const playerSize = 70;
-        const testpoint = 50;
-        const platformAmount = 24;
         const scrollSpeed = 10;  //Pixel pro Frame
+        var gapWidth = 50;
         var indicatorPosition = 0;
         var message = "Press F to hit the gap";
         var cooldown = false;
         var activeGap = 0;
         var firstClickDone = false;
         var score = 0;
-        var beatCount = 1;
         var data;
-	var backgroundSound = "sounds/We will Rock you/WWRY background.mp3";
-	var backgroundDelay = 11;
+        var endDelay = 0;
+        var gameOver = false;
+        var context = new AudioContext();
+	    var request = new XMLHttpRequest();
+        var sourceBuffer = context.createBufferSource();
+
+        var hit300 = 0;
+        var hit100 = 0;
+        var hit50 = 0;
+        var hit0 = 0;
+
+	    var backgroundSound = "sounds/We will Rock you/WWRY background.mp3";
+	    var backgroundDelay = 0.24;
 
         var canv = document.getElementById("canvas");
         var ctx = canv.getContext("2d");
@@ -39,144 +57,159 @@
         }
 
         var platforms = [];
+        var platPos = [];
+        var platCol = [];
         readLevelData();
 
         //Gameloop
         setInterval(update, 1000 / FPS);
-
-        //createFloor();
+        
         indicatorPosition = player.x * 2.2;
 	    
 	//background sound
-
-	var context = new AudioContext();
-	var request = new XMLHttpRequest();
 	request.open('GET', backgroundSound, true);
 	request.responseType = 'arraybuffer';
-	request.onload = function () {
+    request.onload = function () 
+    {
 		var undecodedAudio = request.response;
-		context.decodeAudioData(undecodedAudio, function (buffer) {
-			var sourceBuffer = context.createBufferSource();
+        context.decodeAudioData(undecodedAudio, function (buffer) 
+        {
 			sourceBuffer.buffer = buffer;
 			sourceBuffer.connect(context.destination);
-			sourceBuffer.start(context.currentTime +backgroundDelay);
+            sourceBuffer.start(context.currentTime +backgroundDelay);
 		});
 	};
 	    
-	request.send();    
+	request.send();
 
-        function update()
+    function update()
+    {
+        //message = activeGap;
+        
+        //draw background
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canv.width, canv.height);
+
+        //draw backgroundplatform
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, player.y+playerSize / 20, canv.width, 30);
+
+        //draw text
+        ctx.fillStyle = "white";
+        ctx.fillText(message, canv.width - 400, 50);
+
+        //draw player
+        ctx.fillStyle = "green";
+        ctx.fillRect(player.x, player.y - player.height, player.width, player.height);
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = playerSize / 20;
+        ctx.beginPath();
+        ctx.moveTo(player.x, player.y);
+        ctx.lineTo(player.x + player.width, player.y);
+        ctx.lineTo(player.x + player.width, player.y - player.height);
+        ctx.lineTo(player.x, player.y - player.height);
+        ctx.lineTo(player.x, player.y);
+
+        ctx.stroke();
+        
+
+        //calculate new platform position
+        calcFloor();
+        calcNextGap();
+
+        //draw platform
+        for(var i = 0; i < data.gaps.length; i++)
         {
-            //message = activeGap;
-            //console.log("hi");
-            
-            //draw background
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, 0, canv.width, canv.height);
-
-            //draw backgroundplatform
-            ctx.fillStyle = "white";
-            ctx.fillRect(0, player.y+playerSize / 20, canv.width, 30);
-
-            //draw text
-            ctx.fillStyle = "white";
-            ctx.fillText(message, canv.width - 400, 50);
-
-            //draw player
-            ctx.fillStyle = "green";
-            ctx.fillRect(player.x, player.y - player.height, player.width, player.height);
-            ctx.strokeStyle = "white";
-            ctx.lineWidth = playerSize / 20;
-            ctx.beginPath();
-            ctx.moveTo(player.x, player.y);
-            ctx.lineTo(player.x + player.width, player.y);
-            ctx.lineTo(player.x + player.width, player.y - player.height);
-            ctx.lineTo(player.x, player.y - player.height);
-            ctx.lineTo(player.x, player.y);
-
-            ctx.stroke();
-
-            //calculate new platform position
-            calcFloor();
-            calcNextGap();
-
-            //draw platform
-            for(var i = 0; i < data.gaps.length; i++)
-            {
-                /*if(beatCount == 1 || beatCount == 2)ctx.fillStyle = "blue";
-                else if(beatCount == 3)ctx.fillStyle = "red";
-                else if(beatCount == 4)
-                {
-                    ctx.fillStyle = "white";
-                    beatCount = 0;
-                }   */
-                var splitColor = data.gaps[i].split("-");
-                ctx.fillStyle = splitColor[0]; 
-                
-                ctx.fillRect(platforms[i], player.y+playerSize / 20, testpoint, 30);
-                beatCount++;
-            }
-
-            //draw indicator
-            ctx.strokeStyle = "red";
-            ctx.lineWidth = playerSize / 10;
-            ctx.beginPath();
-            ctx.moveTo(player.x * 2.2, player.y - player.height * 1.5);
-            ctx.lineTo(player.x * 2.2, player.y + player.height / 2);
-
-            ctx.stroke();
+            ctx.fillStyle = platCol[i]; 
+            ctx.fillRect(platforms[i], player.y+playerSize / 20, gapWidth, 30);
         }
 
-        window.onkeydown = function(e)
-        {
-            var key = e.keyCode ? e.keyCode : e.which;
+        //draw indicator
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = playerSize / 10;
+        ctx.beginPath();
+        ctx.moveTo(player.x * 2.2, player.y - player.height * 1.5);
+        ctx.lineTo(player.x * 2.2, player.y + player.height / 2);
 
-            if(key == 70)
-            {
-                checkHit()
-                var context = new AudioContext(),
-                sound = new Audio("sounds/We will Rock you/Beat.mp3"),
-                soundNote = context.createMediaElementSource(sound);
-                var gainNode = context.createGain();
-                gainNode.gain.value = 0.8;
-                soundNote.connect(gainNode);
-                gainNode.connect(context.destination);
-                sound.play();
-            }
-            if(key == 74)
-            {
-                checkHit();
-                var context = new AudioContext(),
-                sound = new Audio("sounds/We will Rock you/Clapp.mp3"),
-                soundNote = context.createMediaElementSource(sound);
-                var gainNode = context.createGain();
-                gainNode.gain.value = 0.8;
-                soundNote.connect(gainNode);
-                gainNode.connect(context.destination);
-                sound.play();
-            }
-        }
+        ctx.stroke();
 
-        /*function createFloor()
+        /*if(platPos[activeGap] +51 < indicatorPosition && cooldown == false)
         {
-            for(var i = 0; i < platformAmount; i++)
-            {
-                platforms[i] = 1000 + (i * 114);
-            }
+            console.log("nop");
+            hit0++;
+            cooldown = true;
         }*/
-        function calcFloor()
+
+        if(activeGap == 44)
         {
-            for(var i = 0; i < data.gaps.length; i++)
-            {
-                platforms[i] = platforms[i] - scrollSpeed;
-            }
+            endDelay++;
+            if(endDelay == 45)levelEnd();
         }
-        function checkHit()
+    }
+
+    var fbtn = document.querySelector("#playKey2");
+    var jbtn = document.querySelector("#playKey3");
+    window.onkeyup = function(e)
+    {
+        var key = e.keyCode ? e.keyCode : e.which;
+        if(key == 70 && !gameOver)
         {
-            var hitError;
-            var points;
-            var rewardMessage;
-            
+            fbtn.style.backgroundColor = "rgb(189, 207, 221)";
+        }
+        if(key == 74 && !gameOver)
+        {
+            jbtn.style.backgroundColor = "rgb(189, 207, 221)";
+        }
+    }
+    window.onkeydown = function(e)
+    {
+        var key = e.keyCode ? e.keyCode : e.which;
+
+        if(key == 27)
+        {
+            document.getElementById("overlay").style.display = "none";
+        }
+        if(key == 70 && !gameOver)
+        {
+            fbtn.style.backgroundColor = "lightcoral";
+            checkHit(70);
+            var context = new AudioContext();
+            sound = new Audio("sounds/We will Rock you/Beat.mp3");
+            soundNote = context.createMediaElementSource(sound);
+            var gainNode = context.createGain();
+            gainNode.gain.value = 0.8;
+            soundNote.connect(gainNode);
+            gainNode.connect(context.destination);
+            sound.play();
+        }
+        if(key == 74 && !gameOver)
+        {
+            jbtn.style.backgroundColor = "lightcoral";
+            checkHit(74);
+            var context = new AudioContext();
+            sound = new Audio("sounds/We will Rock you/Clapp.mp3");
+            soundNote = context.createMediaElementSource(sound);
+            var gainNode = context.createGain();
+            gainNode.gain.value = 0.8;
+            soundNote.connect(gainNode);
+            gainNode.connect(context.destination);
+            sound.play();
+        }
+    }
+    function calcFloor()
+    {
+        for(var i = 0; i < data.gaps.length; i++)
+        {
+            platforms[i] = platforms[i] - scrollSpeed;
+        }
+    }
+    function checkHit(buttonCheck)
+    {
+        var hitError;
+        var points;
+        var rewardMessage;
+        if(buttonCheck == 70 && platCol[activeGap] == "blue" || buttonCheck == 74 && platCol[activeGap] == "red")
+        {
             if(indicatorPosition > platforms[activeGap] -51 && indicatorPosition < platforms[activeGap] +51)
             {
                 if(cooldown == false)
@@ -186,21 +219,25 @@
                     {
                         points = 300;
                         rewardMessage = "Perfect Hit!";
+                        hit300++;
                     }
                     else if(Math.abs(hitError) < 21)
                     {
                         points = 100;
                         rewardMessage = "Good Hit!";
+                        hit100++;
                     }
                     else if(Math.abs(hitError) < 31)
                     {
                         points = 50;
                         rewardMessage = "Poor Hit!";
+                        hit50++;
                     }
                     else
                     {
                         points = 0;
                         rewardMessage = "Miss!";
+                        hit0++;
                     }
                     score += points;
                     message = hitError + " = " + rewardMessage + " (" + points + ") ----- Score: " + score;
@@ -208,60 +245,78 @@
                 }
             }
         }
-        function calcNextGap()
+    }
+    function calcNextGap()
+    {
+        if((platforms[activeGap] + (platforms[activeGap + 1] - platforms[activeGap]) / 2) < indicatorPosition)
         {
-            if((platforms[activeGap] + (platforms[activeGap + 1] - platforms[activeGap]) / 2) < indicatorPosition)
+            if(firstClickDone == false)
             {
-                if(firstClickDone == false)
-                {
-                    activeGap++;
-                    cooldown = false;
-                }
+                activeGap++;
+                cooldown = false;
             }
         }
-        function readLevelData()
+    }
+    function readLevelData()
+    {
+        /*var reader = new FileReader();
+        reader.onload = function()
         {
-            /*var reader = new FileReader();
-            reader.onload = function()
+            var text = reader.result;
+            var node = document.getElementById('output');
+            node.innerText = text;
+            console.log(reader.result.substring(0, 200));
+        };
+        reader.readAsText(input)*/
+
+        /*var c = 1;
+        var n = -220;
+        var col = "blue";
+
+        for(var i = 0; i < 45; i++)
+        {
+            //console.log(platforms[i]);
+            if(c == 1)
             {
-                var text = reader.result;
-                var node = document.getElementById('output');
-                node.innerText = text;
-                console.log(reader.result.substring(0, 200));
-            };
-            reader.readAsText(input)*/
-            
-            for(var i = 0; i < data.gaps.length; i++)
-            {
-                var splitPos = data.gaps[i].split("-");
-                platforms[i] = 700 + parseInt(splitPos[1]);
-                //console.log(data.gaps[1]);
+                col = "blue";
+                n += 220;
             }
-
-            for(var i = 0; i < platforms.length; i++)
+            else if(c == 2)
             {
-                console.log(platforms[i]);
+                col = "blue";
+                n += 110;
             }
-
-
-
-            
-            
-            
-            /*var rawFile = new XMLHttpRequest();
-            rawFile.open("GET", "wewillrockyou.txt", false);
-            rawFile.onreadystatechance = function()
+            else if(c == 3)
             {
-                if(rawFile.readyState === 4)
-                {
-                    if(rawFile.status === 200 || rawFile.status == 0)
-                    {
-                        var allText = rawFile.responseText;
-                        message = allText;
-                    }
-                }
-            }*/
+                col = "red";
+                n += 110;
+                c = 0;
+            }
+            console.log("\"" + col + "-" + n + "\",");
+            c++;
+        }*/
+        
+        for(var i = 0; i < data.gaps.length; i++)
+        {
+            var splitPos = data.gaps[i].split("-");
+            platPos[i] = parseInt(splitPos[1]);
+            platCol[i] = splitPos[0];
+            
+            platforms[i] = 710 + parseInt(splitPos[1]);
         }
+    }
+    function levelEnd()
+    {
+        sourceBuffer.stop();
+        gameOver = true;
+        document.getElementById("text").textContent = "End Result\n\nPerfect Hit (300 points): " + hit300 + "x\n"
+            + "Good Hit (100 points): " + hit100 + "x\n"
+            + "Poor Hit (50 points): " + hit50 + "x\n"
+            + "Miss (0 points): " + hit0 + "x\n\n"
+            + "Score: " + score;
+        document.getElementById("overlay").style.display = "block";
+    }
+
 	    
 	    //Play Soundfile
         /*document.getElementById("Button1").addEventListener("click", function() {
