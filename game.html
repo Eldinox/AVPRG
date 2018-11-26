@@ -55,7 +55,7 @@
         gainNode.gain.value = 0.8;
         soundNote.connect(gainNode);
         gainNode.connect(context.destination);
-        sound.play();
+        sound.play(context.currentTime +10);
 
         function update()
         {
