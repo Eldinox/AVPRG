@@ -2,9 +2,10 @@ const lvl2SS = 15;
 const lvl2BS = "sounds/Level2/StéLouse - Plastic (feat. Madi & Pink Slip).mp3";
 const lvl2BD = 0.24;
 const lvl2GW = 20;
+const lvl2FND = 1150;
 
 
-data = {"gaps":[
+data2 = {"gaps":[
 "green-0",
 "blue-110", 
 "red-220", 

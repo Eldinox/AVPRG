@@ -27,6 +27,7 @@
         var btn4 = document.querySelector("#playKey4");
         var scrollSpeed;  //Pixel pro Frame
         var gapWidth;
+        var firstNoteDistance;
         var indicatorPosition = 0;
         var message = "Press F to hit the gap";
         var cooldown = false;
@@ -82,6 +83,7 @@
             //difficulty scale
             scrollSpeed = lvl1SS;
             gapWidth = lvl1GW;
+            firstNoteDistance = lvl1FND;
 
             //background sound
             backgroundSound = lvl1BS;
@@ -97,6 +99,7 @@
             //difficulty scale
             scrollSpeed = lvl2SS;
             gapWidth = lvl2GW;
+            firstNoteDistance = lvl2FND;
 
             //background sound
             backgroundSound = lvl2BS;
@@ -162,7 +165,7 @@
         calcNextGap();
 
         //draw platform
-        for(var i = 0; i < data.gaps.length; i++)
+        for(var i = 0; i < platforms.length; i++)
         {
             if(platforms[i] < canv.width && platforms[i] > 0 - gapWidth)
             {
@@ -277,9 +280,19 @@
     }
     function calcFloor()
     {
-        for(var i = 0; i < data.gaps.length; i++)
+        if(levelNr == 1)
         {
-            platforms[i] = platforms[i] - scrollSpeed;
+            for(var i = 0; i < data1.gaps.length; i++)
+            {
+                platforms[i] = platforms[i] - scrollSpeed;
+            }
+        }
+        else if(levelNr == 2)
+        {
+            for(var i = 0; i < data2.gaps.length; i++)
+            {
+                platforms[i] = platforms[i] - scrollSpeed;
+            }
         }
     }
     function checkHit(buttonCheck)
@@ -338,13 +351,27 @@
     }
     function readLevelData()
     {
-        for(var i = 0; i < data.gaps.length; i++)
+        if(levelNr == 1)
         {
-            var splitPos = data.gaps[i].split("-");
-            platPos[i] = parseInt(splitPos[1]);
-            platCol[i] = splitPos[0];
-            platforms[i] = 730 + parseInt(splitPos[1]);
+            for(var i = 0; i < data1.gaps.length; i++)
+            {
+                var splitPos = data1.gaps[i].split("-");
+                platPos[i] = parseInt(splitPos[1]);
+                platCol[i] = splitPos[0];
+                platforms[i] = firstNoteDistance + parseInt(splitPos[1]);
+            }
         }
+        else if(levelNr == 2)
+        {
+            for(var i = 0; i < data2.gaps.length; i++)
+            {
+                var splitPos = data2.gaps[i].split("-");
+                platPos[i] = parseInt(splitPos[1]);
+                platCol[i] = splitPos[0];
+                platforms[i] = firstNoteDistance + parseInt(splitPos[1]);
+            }
+        }
+        
         
         /*var c = 1;
         var n = -220;
