@@ -1,4 +1,11 @@
-data = {"gaps":["blue-0",
+const lvl1SS = 10;
+const lvl1BS = "sounds/We will Rock you/WWRY background.mp3";
+const lvl1BD = 0.24;
+const lvl1GW = 50;
+
+
+data = {"gaps":[
+"blue-0",
 "blue-110", 
 "red-220", 
 "blue-440", 
