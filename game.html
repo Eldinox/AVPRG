@@ -109,10 +109,8 @@
         ctx.lineTo(player.x + player.width, player.y - player.height);
         ctx.lineTo(player.x, player.y - player.height);
         ctx.lineTo(player.x, player.y);
-
         ctx.stroke();
         
-
         //calculate new platform position
         calcFloor();
         calcNextGap();
@@ -120,8 +118,11 @@
         //draw platform
         for(var i = 0; i < data.gaps.length; i++)
         {
-            ctx.fillStyle = platCol[i]; 
-            ctx.fillRect(platforms[i], player.y+playerSize / 20, gapWidth, 30);
+            if(platforms[i] < canv.width - 100 && platforms[i] > 100)
+            {
+                ctx.fillStyle = platCol[i]; 
+                ctx.fillRect(platforms[i], player.y+playerSize / 20, gapWidth, 30);
+            }
         }
 
         //draw indicator
@@ -259,16 +260,14 @@
     }
     function readLevelData()
     {
-        /*var reader = new FileReader();
-        reader.onload = function()
+        for(var i = 0; i < data.gaps.length; i++)
         {
-            var text = reader.result;
-            var node = document.getElementById('output');
-            node.innerText = text;
-            console.log(reader.result.substring(0, 200));
-        };
-        reader.readAsText(input)*/
-
+            var splitPos = data.gaps[i].split("-");
+            platPos[i] = parseInt(splitPos[1]);
+            platCol[i] = splitPos[0];
+            platforms[i] = 710 + parseInt(splitPos[1]);
+        }
+        
         /*var c = 1;
         var n = -220;
         var col = "blue";
@@ -295,15 +294,6 @@
             console.log("\"" + col + "-" + n + "\",");
             c++;
         }*/
-        
-        for(var i = 0; i < data.gaps.length; i++)
-        {
-            var splitPos = data.gaps[i].split("-");
-            platPos[i] = parseInt(splitPos[1]);
-            platCol[i] = splitPos[0];
-            
-            platforms[i] = 710 + parseInt(splitPos[1]);
-        }
     }
     function levelEnd()
     {
