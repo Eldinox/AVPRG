@@ -1,3 +1,7 @@
+html
+{
+    cursor: url("Assets/cursor.png") 64 64, auto;
+}
 body
 {
     background-color: #333333;
@@ -5,7 +9,7 @@ body
 }
 div.mainContainer
 {
-    border-style: double;
+    /*border-style: double;*/
     width: 50%;
     margin-left: 25%;
     margin-top: 5%;
@@ -19,20 +23,108 @@ h1
 }
 .menuButton
 {
-    border-style: double;
-    background-color: #f44336;
-    /*border: 5px;*/
+    background-image: linear-gradient(to right, #25aae1, #40e495, #30dd8a, #33cccc);
+    box-shadow: 0 4px 15px 0 rgba(49, 196, 190, 0.75);
+    background-size: 300% 100%;
     border-radius: 8px;
+    border: none;
     font-size: 30px;
-    width: 50%;
+    width: 60%;
+    height: 100%;
     margin-top: 5%;
     padding: 10px 0px 10px 0px;
-    -webkit-transition-duration: 0.3s;
-    transition-duration: 0.3s;
+    transition: all .4s ease-in-out;
 }
 .menuButton:hover
 {
-    background-color: lightcoral;
+    width: 65%;
+    cursor: url("Assets/cursor.png") 64 64, auto;
+    background-position: 100% 0;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}
+.closeButton
+{
+    margin-left: 2%;
+    background: transparent;
+    border: none !important;
+    font-size: 0;
+    background-size: 90%;
+    background-repeat: no-repeat;
+    background-image: url("Assets/backArrow.png");
+    width: 5%;
+    height:90px;
+    position: absolute;
+    margin-top:6%;
+}
+.closeButton:hover
+{
+    background-size: 95%;
+}
+.ssButtons
+{
+    background-image: linear-gradient(to right, #25aae1, #40e495, #30dd8a, #33cccc);
+    box-shadow: 0 4px 15px 0 rgba(49, 196, 190, 0.75);
+    background-size: 300% 100%;
+    border-radius: 8px;
+    border: none;
+    font-size: 30px;
+    width: 40%;
+    height: 70px;
+    margin-top: 5%;
+    margin-left: 5%;
+    padding: 10px 0px 10px 0px;
+    transition: all .4s ease-in-out;
+}
+.ssButtons:hover
+{
+    width: 65%;
+    height: 150px;
+    cursor: url("Assets/cursor.png") 64 64, auto;
+    background-position: 100% 0;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+    text-align: left;
+    padding-left: 5%;
+}
+.ssButtons:hover span
+{
+    display: none;
+}
+.ssButtons:hover img
+{
+    display: block;
+    align-items: right;
+}
+.ssButtons img
+{
+    display: none;
+}
+#lvl1Button:hover:before
+{
+    content:"Queen - We Will Rock You \a\a Schwierigkeit: 2/10";
+}
+#lvl2Button:hover:before
+{
+    content:"Band - IrgendeinLied \a\a Schwierigkeit: 4/10";
+}
+#lvl3Button:hover:before
+{
+    content:"Auch Band - Auch irgendein Lied \a\a Schwierigkeit: 7/10";
+}
+.ssButtons:hover::before
+{
+    white-space: pre;
+}
+#lvl1Button
+{
+    margin-top:15%;
+}
+.songPrev
+{
+    width:10%;
 }
 .playKeys
 {
@@ -55,6 +147,10 @@ h1
     width: 60%;
     margin-left: 20%;
 }
+#canvasMenu
+{
+    margin-left:30%;
+}
 #overlay
 {
     position: fixed;
@@ -67,9 +163,52 @@ h1
     bottom: 0;
     background-color: rgba(0,0,0,0.7);
     z-index: 2;
-    cursor: pointer;
+    cursor: url("Assets/cursor.png") 64 64, auto;
 }
-#text{
+#overlaySongSelect
+{
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 2;
+    cursor: url("Assets/cursor.png") 64 64, auto;
+}
+#overlayOptions
+{
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 2;
+    cursor: url("Assets/cursor.png") 64 64, auto;
+}
+#overlayHighscores
+{
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 2;
+    cursor: url("Assets/cursor.png") 64 64, auto;
+}
+#text
+{
     position: absolute;
     text-align: center;
     top: 50%;
