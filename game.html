@@ -123,6 +123,7 @@
             {
 	    		sourceBuffer.buffer = buffer;
 	    		sourceBuffer.connect(context.destination);
+		    	sourceBuffer.connect(gainNode);
 		    	gainNode.connect(context.destination);
 		    	gainNode.gain.value = 0.1;
                 sourceBuffer.start(context.currentTime +backgroundDelay);
