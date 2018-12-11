@@ -112,6 +112,7 @@
         }
 
         readLevelData();
+	var gainNode = context.createGain();
 
         request.open('GET', backgroundSound, true);
 	    request.responseType = 'arraybuffer';
@@ -122,6 +123,8 @@
             {
 	    		sourceBuffer.buffer = buffer;
 	    		sourceBuffer.connect(context.destination);
+		    	gainNode.connect(context.destination);
+		    	gainNode.gain.value = 0.1;
                 sourceBuffer.start(context.currentTime +backgroundDelay);
 	    	});
 	    };
