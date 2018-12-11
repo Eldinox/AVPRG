@@ -122,7 +122,7 @@
             context.decodeAudioData(undecodedAudio, function (buffer) 
             {
 	    		sourceBuffer.buffer = buffer;
-	    		sourceBuffer.connect(context.destination);
+	    		//sourceBuffer.connect(context.destination);
 		    	sourceBuffer.connect(gainNode);
 		    	gainNode.connect(context.destination);
 		    	gainNode.gain.value = 0.1;
