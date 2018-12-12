@@ -21,7 +21,7 @@
         </div>
     </div>
     <div id=overlaySongSelect>
-        <button class=closeButton onclick="closeOverlay();"></button>
+        <button id=closeButton onclick="closeOverlay();"></button>
         <button class=ssButtons id=lvl1Button onclick="location.href='game.html?WeWillRockYou'";>
             <span>Queen - We Will Rock You</span>
         </button><br>
@@ -33,12 +33,47 @@
         </button>
     </div>
     <div id=overlayOptions>
-            <div id=text>Optionen</div>
-        <button class=closeButton onclick="closeOverlay();"></button>
+        <div id=textOptions>
+            <h2>Optionen</h2>
+            <table id=optionsTable>
+                <tr>
+                    <th colspan="2">Audio</th>
+                </tr>
+                <tr>
+                    <td>Musiklautstärke</td>
+                    <td><input type=range min=0 max=120 value="80" class=sliders id=musicVolume></td>
+                </tr>
+                <tr>
+                    <td>Effektlautstärke</td>
+                    <td><input type=range min=0 max=100 value="80" class=sliders id=effectVolume></td>
+                </tr>
+                <tr>
+                    <th colspan="2">Tastenbelegung</th>
+                </tr>
+                <tr>
+                    <td>Taste 1</td>
+                    <td><input type=button class=keySetter id=keySetter1 value="D"></td>
+                </tr>
+                <tr>
+                    <td>Taste 2</td>
+                    <td><input type=button class=keySetter id=keySetter2 value="F"></td>
+                </tr>
+                <tr>
+                    <td>Taste 3</td>
+                    <td><input type=button class=keySetter id=keySetter3 value="J"></td>
+                </tr>
+                <tr>
+                    <td>Taste 4</td>
+                    <td><input type=button class=keySetter id=keySetter4 value="K"></td>
+                </tr>
+            </table>
+        </div>
+        <button id=closeButton onclick="closeOverlay();"></button>
+        <button id=saveButton onclick="saveOptions();">Speichern</button>
     </div>
     <div id=overlayHighscores>
             <div id=text>Highscore Liste</div>
-        <button class=closeButton onclick="closeOverlay();"></button>
+        <button id=closeButton onclick="closeOverlay();"></button>
     </div>
     <script>
         document.getElementById("overlaySongSelect").style.display = "none";
@@ -61,6 +96,12 @@
             document.getElementById("overlayOptions").style.display = "none";
             document.getElementById("overlayHighscores").style.display = "none";
             document.getElementById("overlaySongSelect").style.display = "none";
+        }
+        function saveOptions()
+        {
+            localStorage.setItem("musicVolume", musicVolume.value);
+            localStorage.setItem("effectVolume", effectVolume.value);
+            document.getElementById("overlayOptions").style.display = "none";
         }
     </script>
     <canvas id=canvasMenu width=800 height=200></canvas>

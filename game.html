@@ -44,6 +44,8 @@
         var btn3;
         var btn4;
         var levelNr;
+        var sound1;
+        var sound2;
 
         var hit300 = 0;
         var hit100 = 0;
@@ -85,9 +87,11 @@
             gapWidth = lvl1GW;
             firstNoteDistance = lvl1FND;
 
-            //background sound
+            //sound
             backgroundSound = lvl1BS;
             backgroundDelay = lvl1BD;
+            sound1 = new Audio(lvl1Sound1);
+            sound2 = new Audio(lvl1Sound2);
 
             //UI
             btn2.style.backgroundColor = "rgb(189, 207, 221)";
@@ -112,7 +116,7 @@
         }
 
         readLevelData();
-	var gainNode = context.createGain();
+	    var gainNode = context.createGain();
 
         request.open('GET', backgroundSound, true);
 	    request.responseType = 'arraybuffer';
@@ -125,7 +129,8 @@
 	    		//sourceBuffer.connect(context.destination);
 		    	sourceBuffer.connect(gainNode);
 		    	gainNode.connect(context.destination);
-		    	gainNode.gain.value = 0.1;
+                gainNode.gain.value = localStorage.musicVolume * 0.01;
+                console.log(gainNode.gain.value);
                 sourceBuffer.start(context.currentTime +backgroundDelay);
 	    	});
 	    };
@@ -247,7 +252,7 @@
             btn2.style.backgroundColor = "lightcoral";
             checkHit(70);
             var context = new AudioContext();
-            sound = new Audio("sounds/We will Rock you/Beat.mp3");
+            sound = sound1;
             soundNote = context.createMediaElementSource(sound);
             var gainNode = context.createGain();
             gainNode.gain.value = 0.8;
@@ -260,7 +265,7 @@
             btn3.style.backgroundColor = "lightcoral";
             checkHit(74);
             var context = new AudioContext();
-            sound = new Audio("sounds/We will Rock you/Clapp.mp3");
+            sound = sound2;
             soundNote = context.createMediaElementSource(sound);
             var gainNode = context.createGain();
             gainNode.gain.value = 0.8;
