@@ -1,4 +1,4 @@
-const lvl3SS = 35;
+const lvl3SS = 30;
 const lvl3BS = "sounds/A Fool Moon Night/audio.mp3";
 const lvl3Sound1 = "sounds/Heathens/Heathens Hat1.mp3";
 const lvl3Sound2 = "sounds/Heathens/Heathens Hat1.mp3";

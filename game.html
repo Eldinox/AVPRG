@@ -330,7 +330,7 @@
             {
                 document.querySelector("#canvas").style.cursor = "url('Assets/cursor2.png')64 64, auto";
             }
-            if(document.getElementById("healthBar").value < 1)
+            if(document.getElementById("healthBar").value < 1 && levelNr != 3)
             {
                 levelEnd("dead");
             }
@@ -380,7 +380,6 @@
             checkHit(68);                               
             if(!btnDown1)
             {
-                console.log("D "+ platforms[0]);
                 var context = new AudioContext();
                 sound = new Audio(sound3);
                 soundNote = context.createMediaElementSource(sound);
@@ -398,7 +397,6 @@
             checkHit(70);
             if(!btnDown2)
             {
-                console.log("F "+ platforms[0]);
                 var context = new AudioContext();
                 sound = new Audio(sound1);
                 soundNote = context.createMediaElementSource(sound);
@@ -416,7 +414,6 @@
             checkHit(74);
             if(!btnDown3)
             {
-                console.log("J "+ platforms[0]);
                 var context = new AudioContext();
                 sound = new Audio(sound2);
                 soundNote = context.createMediaElementSource(sound);
@@ -434,7 +431,6 @@
             checkHit(75);
             if(!btnDown4)
             {
-                console.log("K "+ platforms[0]);
                 var context = new AudioContext();
                 sound = new Audio(sound4);
                 soundNote = context.createMediaElementSource(sound);
@@ -479,12 +475,12 @@
         if(buttonCheck == 70 && platCol[activeGap] == "blue" || buttonCheck == 74 && platCol[activeGap] == "red"
             || buttonCheck == 68 && platCol[activeGap] == "green")
         {
-            if(indicatorPosition > platforms[activeGap] -31 && indicatorPosition < platforms[activeGap] + gapWidth + 31)
+            if(indicatorPosition > platforms[activeGap] -81 && indicatorPosition < platforms[activeGap] + gapWidth + 61)
             {
                 if(cooldown == false)
                 {
                     hitError = indicatorPosition - platforms[activeGap];
-                    if(Math.abs(hitError) < 21)
+                    if(Math.abs(hitError) < 31)
                     {
                         points = 300;
                         rewardMessage = "Perfect Hit!";
@@ -492,7 +488,7 @@
                         document.getElementById("healthBar").value += 10;
                         hit300++;
                     }
-                    else if(Math.abs(hitError) < 31)
+                    else if(Math.abs(hitError) < 41)
                     {
                         points = 100;
                         rewardMessage = "Good Hit!";
@@ -500,7 +496,7 @@
                         document.getElementById("healthBar").value += 10;
                         hit100++;
                     }
-                    else if(Math.abs(hitError) < 41)
+                    else if(Math.abs(hitError) < 51)
                     {
                         points = 50;
                         rewardMessage = "Poor Hit!";
@@ -600,6 +596,56 @@
             c++;
         }*/
         var c = 1;
+        var n = 12411;
+        var col = "blue";
+
+        for(var i = 0; i < 200; i++)
+        {
+            if(c == 1)
+            {
+                col = "green";
+                n += 197;
+            }
+            else if(c == 2)
+            {
+                col = "red";
+                n += 197;
+            }
+            else if(c == 3)
+            {
+                col = "blue";
+                n += 197;
+            }
+            else if(c == 4)
+            {
+                col = "red";
+                n += 197;
+            }
+            else if(c == 5)
+            {
+                col = "red";
+                n += 197;
+            }
+            else if(c == 6)
+            {
+                col = "green";
+                n += 197;
+            }
+            else if(c == 7)
+            {
+                col = "blue";
+                n += 197;
+            }
+            else if(c == 8)
+            {
+                col = "red";
+                n += 197;
+                c = 0;
+            }
+            console.log("\"" + col + "-" + n + "\",");
+            c++;
+        }
+        /*var c = 1;
         var n = -150;
         var colors = ["blue", "red", "gree", "orange"];
 
@@ -619,7 +665,7 @@
             }
             console.log("\"" + col + "-" + n + "\",");
             c++;
-        }
+        }*/
     }
     function levelEnd(result)
     {
