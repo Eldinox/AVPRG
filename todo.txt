@@ -1,6 +1,5 @@
 Menü Musik credit: https://soundimage.org/looping-music/
 
 ToDo:
--Hide cursor while playing
--performance (button press)
+No Hit = Miss
 ...

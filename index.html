@@ -4,6 +4,7 @@
 	<Title>AVPRG</title>
     <meta charset=utf-8>
     <link rel=stylesheet href=stylesheet.css type=text/css>
+    <script type="text/javascript" src="Assets/highscores.js"></script>
 </head>
 <body>
     <div class=mainContainer>
@@ -22,14 +23,14 @@
     </div>
     <div id=overlaySongSelect>
         <button id=closeButton onclick="closeOverlay();"></button>
-        <button class=ssButtons id=lvl1Button onclick="location.href='game.html?WeWillRockYou'";>
+        <button class=ssButtons id=lvl1Button onclick="location.href='game.html?WeWillRockYou'">
             <span>Queen - We Will Rock You</span>
         </button><br>
-        <button class=ssButtons id=lvl2Button onclick="location.href='game.html?Level2'">
-            <span>Band - Song 2</span>
+        <button class=ssButtons id=lvl2Button onclick="location.href='game.html?Heathens'">
+            <span>Twenty One Pilots - Heathens</span>
         </button><br>
-        <button class=ssButtons id=lvl3Button>
-            <span>Band - Song 3</span>
+        <button class=ssButtons id=lvl3Button onclick="location.href='game.html?FoolMoonNight'">
+            <span>The Koxx - A Fool Moon Night</span>
         </button>
     </div>
     <div id=overlayOptions>
@@ -72,13 +73,38 @@
         <button id=saveButton onclick="saveOptions();">Speichern</button>
     </div>
     <div id=overlayHighscores>
-            <div id=text>Highscore Liste</div>
+        <div id=textHighscore>
+            <h3>Highscore Liste</h3>
+            <table id=highscoreTable>
+                <tr>
+                    <th colspan="2">
+                        <div class=tab>
+                            <button class="tablinks" id=tab1 onclick="loadScore(1)">We Will Rock You</button>
+                            <button class="tablinks" onclick="loadScore(2)">Heathens</button>
+                            <button class="tablinks" onclick="loadScore(3)">A Fool Moon Night</button>
+                        </div>
+                    </th>
+                </tr>
+                <script language="javascript" type="text/javascript">
+                    for (var i = 0; i < 10; i++) 
+                    {
+                        document.write("<tr><td>" + highscoreList1[i] + "</td>");
+                        document.write("<td>" + highscoreList1[i + 1] + "</td></tr>");
+                        i++;
+                    }
+                </script>
+            </table>
+        </div>
         <button id=closeButton onclick="closeOverlay();"></button>
     </div>
     <script>
         document.getElementById("overlaySongSelect").style.display = "none";
         document.getElementById("overlayOptions").style.display = "none";
         document.getElementById("overlayHighscores").style.display = "none";
+        localStorage.setItem("musicVolume", musicVolume.value);
+        localStorage.setItem("effectVolume", effectVolume.value);
+        var table = document.getElementById("highscoreTable");
+        
         function openSongSelect()
         {
             document.getElementById("overlaySongSelect").style.display = "block";
@@ -97,6 +123,48 @@
             document.getElementById("overlayHighscores").style.display = "none";
             document.getElementById("overlaySongSelect").style.display = "none";
         }
+        function loadScore(levelNmb)
+        {
+            if(levelNmb == 1)
+            {
+                table.rows[1].cells[0].innerHTML = highscoreList2[0];
+                table.rows[1].cells[1].innerHTML = highscoreList1[1];
+                table.rows[2].cells[0].innerHTML = highscoreList1[2];
+                table.rows[2].cells[1].innerHTML = highscoreList1[3];
+                table.rows[3].cells[0].innerHTML = highscoreList1[4];
+                table.rows[3].cells[1].innerHTML = highscoreList1[5];
+                table.rows[4].cells[0].innerHTML = highscoreList1[6];
+                table.rows[4].cells[1].innerHTML = highscoreList1[7];
+                table.rows[5].cells[0].innerHTML = highscoreList1[8];
+                table.rows[5].cells[1].innerHTML = highscoreList1[9];
+            }
+            else if(levelNmb == 2)
+            {
+                table.rows[1].cells[0].innerHTML = highscoreList2[0];
+                table.rows[1].cells[1].innerHTML = highscoreList2[1];
+                table.rows[2].cells[0].innerHTML = highscoreList2[2];
+                table.rows[2].cells[1].innerHTML = highscoreList2[3];
+                table.rows[3].cells[0].innerHTML = highscoreList2[4];
+                table.rows[3].cells[1].innerHTML = highscoreList2[5];
+                table.rows[4].cells[0].innerHTML = highscoreList2[6];
+                table.rows[4].cells[1].innerHTML = highscoreList2[7];
+                table.rows[5].cells[0].innerHTML = highscoreList2[8];
+                table.rows[5].cells[1].innerHTML = highscoreList2[9];
+            }
+            else if(levelNmb == 3)
+            {
+                table.rows[1].cells[0].innerHTML = highscoreList3[0];
+                table.rows[1].cells[1].innerHTML = highscoreList3[1];
+                table.rows[2].cells[0].innerHTML = highscoreList3[2];
+                table.rows[2].cells[1].innerHTML = highscoreList3[3];
+                table.rows[3].cells[0].innerHTML = highscoreList3[4];
+                table.rows[3].cells[1].innerHTML = highscoreList3[5];
+                table.rows[4].cells[0].innerHTML = highscoreList3[6];
+                table.rows[4].cells[1].innerHTML = highscoreList3[7];
+                table.rows[5].cells[0].innerHTML = highscoreList3[8];
+                table.rows[5].cells[1].innerHTML = highscoreList3[9];
+            }
+        }
         function saveOptions()
         {
             localStorage.setItem("musicVolume", musicVolume.value);
@@ -104,8 +172,8 @@
             document.getElementById("overlayOptions").style.display = "none";
         }
     </script>
-    <canvas id=canvasMenu width=800 height=200></canvas>
-    <!--<script>
+    <!--<canvas id=canvasMenu width=800 height=200></canvas>
+    <script>
         const FPS = 30;
         const backgroundSound = "sounds/Menu/Trancyvania.mp3";
         const backgroundDelay = 0.1;

@@ -2,9 +2,11 @@ const lvl1SS = 10;
 const lvl1BS = "sounds/We will Rock you/WWRY background.mp3";
 const lvl1Sound1 = "sounds/We will Rock you/Beat.mp3";
 const lvl1Sound2 = "sounds/We will Rock you/Clapp.mp3";
-const lvl1BD = 0.24;
+const lvl1Sound3 = "";
+const lvl1Sound4 = "";
+const lvl1BD = 0.98;
 const lvl1GW = 50;
-const lvl1FND = 730;
+const lvl1FND = 800;
 
 
 data1 = {"gaps":[

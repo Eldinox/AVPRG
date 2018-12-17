@@ -5,18 +5,43 @@
     <meta charset=utf-8>
     <link rel=stylesheet href=stylesheet.css type=text/css>
     <script type="text/javascript" src="LevelData/wewillrockyou.js"></script>
-    <script type="text/javascript" src="LevelData/level2.js"></script>
+    <script type="text/javascript" src="LevelData/heathens.js"></script>
+    <script type="text/javascript" src="LevelData/foolmoon.js"></script>
 </head>
 <body>
     <div id=overlay>
-        <div id=text>End Result</div>
+        <div id=text></div>
+        <button class= overlayButtons id=overlayBackButton onclick="location.href='index.html'">Hauptmenü</button>
+        <button class= overlayButtons id=overlayRetryButton1 onclick="location.reload()">Noch einmal</button>
     </div>
+    <div id=overlayPause>
+        <div id=text>Pause</div>
+        <button class= overlayButtons id=overlayBackButton onclick="location.href='index.html'">Hauptmenü</button>
+        <button class= overlayButtons id=overlayRetryButton1 onclick="location.reload()">Noch einmal</button>
+    </div>
+    <div id=overlay300 class=overlayPoints>
+        <div id=text>300</div>
+    </div>
+    <div id=overlay100 class=overlayPoints>
+        <div id=text>100</div>
+    </div>
+    <div id=overlay50 class=overlayPoints>
+        <div id=text>50</div>
+    </div>
+    <div id=overlayMiss class=overlayPoints>
+        <div id=text>Miss</div>
+    </div>
+    <progress id=healthBar value=100 max=100></progress>
     <canvas id=canvas width=1200 height=800></canvas>
     <div id=keyUI>
         <div class=playKeys id=playKey1>D</div>
         <div class=playKeys id=playKey2>F</div>
         <div class=playKeys id=playKey3>J</div>
         <div class=playKeys id=playKey4>K</div>
+        <div class=colorInd id=ind1></div>
+        <div class=colorInd id=ind2></div>
+        <div class=colorInd id=ind3></div>
+        <div class=colorInd id=ind4></div>
     </div>
     <script>
         const FPS = 30;
@@ -29,9 +54,13 @@
         var gapWidth;
         var firstNoteDistance;
         var indicatorPosition = 0;
-        var message = "Press F to hit the gap";
+        var message = "Score: 0";
         var cooldown = false;
         var activeGap = 0;
+        var btnDown1 = false;
+        var btnDown2 = false;
+        var btnDown3 = false;
+        var btnDown4 = false;
         var firstClickDone = false;
         var score = 0;
         var endDelay = 0;
@@ -46,11 +75,28 @@
         var levelNr;
         var sound1;
         var sound2;
+        var sound3;
+        var sound4;
+        /*var context1 = new AudioContext();
+        var context2 = new AudioContext();
+        var context3 = new AudioContext();
+        var context4 = new AudioContext();
+        var soundNote1;
+        var soundNote2;
+        var soundNote3;
+        var soundNote4;
+        var gainNode1;
+        var gainNode2;
+        var gainNode3;
+        var gainNode4;*/
 
         var hit300 = 0;
         var hit100 = 0;
         var hit50 = 0;
         var hit0 = 0;
+
+        var overlayTimer = 0;
+        var mouseInactiveTimer = 0;
 
 	    var backgroundSound;
 	    var backgroundDelay;
@@ -92,12 +138,18 @@
             backgroundDelay = lvl1BD;
             sound1 = lvl1Sound1;
             sound2 = lvl1Sound2;
+            /*sound1 = new Audio(lvl1Sound1);
+            sound2 = new Audio(lvl1Sound2);
+            sound3 = new Audio(lvl1Sound3);
+            sound4 = new Audio(lvl1Sound4);*/
 
             //UI
             btn2.style.backgroundColor = "rgb(189, 207, 221)";
             btn3.style.backgroundColor = "rgb(189, 207, 221)";
+            document.getElementById("ind1").style.backgroundColor = "rgba(0,0,0,0.0)";
+            document.getElementById("ind4").style.backgroundColor = "rgba(0,0,0,0.0)";
         }
-        else if(window.location.href.includes("Level2"))
+        else if(window.location.href.includes("Heathens"))
         {
             levelNr = 2;
             //difficulty scale
@@ -105,125 +157,213 @@
             gapWidth = lvl2GW;
             firstNoteDistance = lvl2FND;
 
-            //background sound
+            //sound
             backgroundSound = lvl2BS;
             backgroundDelay = lvl2BD;
-
+            sound1 = lvl2Sound1;
+            sound2 = lvl2Sound2;
+            sound3 = lvl2Sound3;
+            /*sound1 = new Audio(lvl2Sound1);
+            sound2 = new Audio(lvl2Sound2);
+            sound3 = new Audio(lvl2Sound3);
+            sound4 = new Audio(lvl2Sound4);*/
+            
             //UI
+            btn1.style.backgroundColor = "rgb(189, 207, 221)";
+            btn2.style.backgroundColor = "rgb(189, 207, 221)";
+            btn3.style.backgroundColor = "rgb(189, 207, 221)";
+            document.getElementById("ind4").style.backgroundColor = "rgba(0,0,0,0.0)";
+        }
+        else if(window.location.href.includes("FoolMoon"))
+        {
+            levelNr = 3;
+            //difficulty scale
+            scrollSpeed = lvl3SS;
+            gapWidth = lvl3GW;
+            firstNoteDistance = lvl3FND;
+
+            //sound
+            backgroundSound = lvl3BS;
+            backgroundDelay = lvl3BD;
+            sound1 = lvl3Sound1;
+            sound2 = lvl3Sound2;
+            sound3 = lvl3Sound3;
+            sound4 = lvl3Sound4;
+            /*sound1 = new Audio(lvl2Sound1);
+            sound2 = new Audio(lvl2Sound2);
+            sound3 = new Audio(lvl2Sound3);
+            sound4 = new Audio(lvl2Sound4);*/
+            
+            //UI
+            btn1.style.backgroundColor = "rgb(189, 207, 221)";
             btn2.style.backgroundColor = "rgb(189, 207, 221)";
             btn3.style.backgroundColor = "rgb(189, 207, 221)";
             btn4.style.backgroundColor = "rgb(189, 207, 221)";
         }
 
-        readLevelData();
-	    var gainNode = context.createGain();
+        //Sound Effects
+        /*soundNote1 = context1.createMediaElementSource(sound1);
+        soundNote2 = context2.createMediaElementSource(sound2);
+        soundNote3 = context3.createMediaElementSource(sound3);
+        gainNode1 = context1.createGain();
+        gainNode2 = context2.createGain();
+        gainNode3 = context3.createGain();
+        gainNode1.gain.value = localStorage.effectVolume * 0.01;
+        gainNode2.gain.value = localStorage.effectVolume * 0.01;
+        gainNode3.gain.value = localStorage.effectVolume * 0.01;
+        soundNote1.connect(gainNode1);
+        soundNote2.connect(gainNode2);
+        soundNote3.connect(gainNode3);
+        gainNode1.connect(context1.destination);
+        gainNode2.connect(context2.destination);
+        gainNode3.connect(context3.destination);*/
 
+        //Background Music
+	    var gainNode = context.createGain();
         request.open('GET', backgroundSound, true);
 	    request.responseType = 'arraybuffer';
         request.onload = function () 
         {
 	    	var undecodedAudio = request.response;
-            context.decodeAudioData(undecodedAudio, function (buffer) 
+            context.decodeAudioData(undecodedAudio, function(buffer) 
             {
 	    		sourceBuffer.buffer = buffer;
 	    		//sourceBuffer.connect(context.destination);
 		    	sourceBuffer.connect(gainNode);
 		    	gainNode.connect(context.destination);
                 gainNode.gain.value = localStorage.musicVolume * 0.01;
-                console.log(gainNode.gain.value);
-                sourceBuffer.start(context.currentTime +backgroundDelay);
+                sourceBuffer.start(context.currentTime + backgroundDelay);
 	    	});
 	    };
         request.send();
 
+        readLevelData();
         //Gameloop
         setInterval(update, 1000 / FPS);
     }
 
     function update()
     {
-        //message = activeGap;
-        
-        //draw background
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, canv.width, canv.height);
-
-        //draw backgroundplatform
-        ctx.fillStyle = "white";
-        ctx.fillRect(0, player.y+playerSize / 20, canv.width, 30);
-
-        //draw text
-        ctx.fillStyle = "white";
-        ctx.fillText(message, canv.width - 400, 50);
-
-        //draw player
-        ctx.fillStyle = "green";
-        ctx.fillRect(player.x, player.y - player.height, player.width, player.height);
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = playerSize / 20;
-        ctx.beginPath();
-        ctx.moveTo(player.x, player.y);
-        ctx.lineTo(player.x + player.width, player.y);
-        ctx.lineTo(player.x + player.width, player.y - player.height);
-        ctx.lineTo(player.x, player.y - player.height);
-        ctx.lineTo(player.x, player.y);
-        ctx.stroke();
-        
-        //calculate new platform position
-        calcFloor();
-        calcNextGap();
-
-        //draw platform
-        for(var i = 0; i < platforms.length; i++)
+        if(!gameOver)
         {
-            if(platforms[i] < canv.width && platforms[i] > 0 - gapWidth)
+            //message = activeGap;
+        
+            //draw background
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canv.width, canv.height);
+
+            //draw backgroundplatform
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, player.y+playerSize / 20, canv.width, 30);
+
+            //draw text
+            ctx.fillStyle = "white";
+            ctx.fillText(message, canv.width - 180, 50);
+
+            //draw player
+            ctx.fillStyle = "green";
+            ctx.fillRect(player.x, player.y - player.height, player.width, player.height);
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = playerSize / 20;
+            ctx.beginPath();
+            ctx.moveTo(player.x, player.y);
+            ctx.lineTo(player.x + player.width, player.y);
+            ctx.lineTo(player.x + player.width, player.y - player.height);
+            ctx.lineTo(player.x, player.y - player.height);
+            ctx.lineTo(player.x, player.y);
+            ctx.stroke();
+            
+            //calculate new platform position
+            calcFloor();
+            calcNextGap();
+
+            //draw platform
+            for(var i = 0; i < platforms.length; i++)
             {
-                ctx.fillStyle = platCol[i]; 
-                ctx.fillRect(platforms[i], player.y+playerSize / 20, gapWidth, 30);
+                if(platforms[i] < canv.width && platforms[i] > 0 - gapWidth)
+                {
+                    ctx.fillStyle = platCol[i]; 
+                    ctx.fillRect(platforms[i], player.y+playerSize / 20, gapWidth, 30);
+                }
             }
-        }
 
-        //draw indicator
-        ctx.strokeStyle = "red";
-        ctx.lineWidth = playerSize / 10;
-        ctx.beginPath();
-        ctx.moveTo(player.x * 2.2, player.y - player.height * 1.5);
-        ctx.lineTo(player.x * 2.2, player.y + player.height / 2);
+            //draw indicator
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = playerSize / 10;
+            ctx.beginPath();
+            ctx.moveTo(player.x * 2.2, player.y - player.height * 1.5);
+            ctx.lineTo(player.x * 2.2, player.y + player.height / 2);
 
-        ctx.stroke();
+            ctx.stroke();
 
-        /*if(platPos[activeGap] +51 < indicatorPosition && cooldown == false)
-        {
-            console.log("nop");
-            hit0++;
-            cooldown = true;
-        }*/
+            document.getElementById("healthBar").value -= 0.2;
 
-        if(activeGap == platforms.length - 1)
-        {
-            endDelay++;
-            if(endDelay == platforms.length)levelEnd();
+            /*if(platPos[activeGap] +51 < indicatorPosition && cooldown == false)
+            {
+                console.log("nop");
+                hit0++;
+                cooldown = true;
+            }*/
+
+            if(activeGap == platforms.length - 1)
+            {
+                endDelay++;
+                if(endDelay == platforms.length)levelEnd("finish");
+            }
+            if(overlayTimer > 0)
+            {
+                if(overlayTimer < 8)
+                {
+                    overlayTimer++;
+                }
+                else
+                {
+                    document.getElementById("overlay300").style.display = "none";
+                    document.getElementById("overlay100").style.display = "none";
+                    document.getElementById("overlay50").style.display = "none";
+                    document.getElementById("overlayMiss").style.display = "none";
+                    overlayTimer = 0;
+                }
+            }
+            mouseInactiveTimer++;
+            if(mouseInactiveTimer > 70)
+            {
+                document.querySelector("#canvas").style.cursor = "url('Assets/cursor2.png')64 64, auto";
+            }
+            if(document.getElementById("healthBar").value < 1)
+            {
+                levelEnd("dead");
+            }
         }
     }
 
+    window.onmousemove = function(e)
+    {
+        mouseInactiveTimer = 0;
+        document.querySelector("#canvas").style.cursor = "url('Assets/cursor.png')64 64, auto";
+    }
     window.onkeyup = function(e)
     {
         var key = e.keyCode ? e.keyCode : e.which;
-        if(key == 68 && !gameOver && levelNr == 3)
+        if(key == 68 && !gameOver && levelNr == 2 || levelNr == 3)
         {
             btn1.style.backgroundColor = "rgb(189, 207, 221)";
+            btnDown1 = false;
         }
         if(key == 70 && !gameOver)
         {
             btn2.style.backgroundColor = "rgb(189, 207, 221)";
+            btnDown2 = false;
         }
         if(key == 74 && !gameOver)
         {
             btn3.style.backgroundColor = "rgb(189, 207, 221)";
+            btnDown3 = false;
         }
-        if(key == 75 && !gameOver && levelNr == 2 || levelNr == 3)
+        if(key == 75 && !gameOver && levelNr == 3)
         {
             btn4.style.backgroundColor = "rgb(189, 207, 221)";
+            btnDown4 = false;
         }
     }
     window.onkeydown = function(e)
@@ -232,59 +372,79 @@
 
         if(key == 27)
         {
-            document.getElementById("overlay").style.display = "none";
+            document.getElementById("overlayPause").style.display = "block";
         }
-        if(key == 68 && !gameOver && levelNr == 3)
+        if(key == 68 && !gameOver && levelNr == 2 || key == 68 && !gameOver && levelNr == 3)
         {
             btn1.style.backgroundColor = "lightcoral";
-            checkHit(70);                                                           //HIER NOCH ÄNDERN 
-            var context = new AudioContext();
-            sound = new Audio("sounds/We will Rock you/Beat.mp3");                  //DAS HIER ALLES RAUS DAMIT ES NICHT IMMER WIEDER BERECHNET WIRD
-            soundNote = context.createMediaElementSource(sound);
-            var gainNode = context.createGain();
-            gainNode.gain.value = 0.8;
-            soundNote.connect(gainNode);
-            gainNode.connect(context.destination);
-            sound.play();
+            checkHit(68);                               
+            if(!btnDown1)
+            {
+                console.log("D "+ platforms[0]);
+                var context = new AudioContext();
+                sound = new Audio(sound3);
+                soundNote = context.createMediaElementSource(sound);
+                var gainNode = context.createGain();
+                gainNode.gain.value = localStorage.effectVolume * 0.01;
+                soundNote.connect(gainNode);
+                gainNode.connect(context.destination);
+                sound.play();
+            }
+            btnDown1 = true;
         }
         if(key == 70 && !gameOver)
         {
             btn2.style.backgroundColor = "lightcoral";
             checkHit(70);
-            var context = new AudioContext();
-            sound = new Audio(sound1);
-            soundNote = context.createMediaElementSource(sound);
-            var gainNode = context.createGain();
-            gainNode.gain.value = localStorage.effectVolume * 0.01;
-            soundNote.connect(gainNode);
-            gainNode.connect(context.destination);
-            sound.play();
+            if(!btnDown2)
+            {
+                console.log("F "+ platforms[0]);
+                var context = new AudioContext();
+                sound = new Audio(sound1);
+                soundNote = context.createMediaElementSource(sound);
+                var gainNode = context.createGain();
+                gainNode.gain.value = localStorage.effectVolume * 0.01;
+                soundNote.connect(gainNode);
+                gainNode.connect(context.destination);
+                sound.play();
+            }
+            btnDown2 = true;
         }
         if(key == 74 && !gameOver)
         {
             btn3.style.backgroundColor = "lightcoral";
             checkHit(74);
-            var context = new AudioContext();
-            sound = new Audio(sound2);
-            soundNote = context.createMediaElementSource(sound);
-            var gainNode = context.createGain();
-            gainNode.gain.value = localStorage.effectVolume * 0.01;
-            soundNote.connect(gainNode);
-            gainNode.connect(context.destination);
-            sound.play();
+            if(!btnDown3)
+            {
+                console.log("J "+ platforms[0]);
+                var context = new AudioContext();
+                sound = new Audio(sound2);
+                soundNote = context.createMediaElementSource(sound);
+                var gainNode = context.createGain();
+                gainNode.gain.value = localStorage.effectVolume * 0.01;
+                soundNote.connect(gainNode);
+                gainNode.connect(context.destination);
+                sound.play();
+            }
+            btnDown3 = true;
         }
-        if(key == 75 && !gameOver && levelNr == 2 || levelNr == 3)
+        if(key == 75 && !gameOver && levelNr == 3)
         {
             btn4.style.backgroundColor = "lightcoral";
-            checkHit(74);                                                           //HIER NOCH ÄNDERN
-            var context = new AudioContext();
-            sound = new Audio("sounds/We will Rock you/Clapp.mp3");
-            soundNote = context.createMediaElementSource(sound);
-            var gainNode = context.createGain();
-            gainNode.gain.value = 0.8;
-            soundNote.connect(gainNode);
-            gainNode.connect(context.destination);
-            sound.play();
+            checkHit(75);
+            if(!btnDown4)
+            {
+                console.log("K "+ platforms[0]);
+                var context = new AudioContext();
+                sound = new Audio(sound4);
+                soundNote = context.createMediaElementSource(sound);
+                var gainNode = context.createGain();
+                gainNode.gain.value = localStorage.effectVolume * 0.01;
+                soundNote.connect(gainNode);
+                gainNode.connect(context.destination);
+                sound.play();
+            }
+            btnDown4 = true;
         }
     }
     function calcFloor()
@@ -303,45 +463,61 @@
                 platforms[i] = platforms[i] - scrollSpeed;
             }
         }
+        else if(levelNr == 3)
+        {
+            for(var i = 0; i < data3.gaps.length; i++)
+            {
+                platforms[i] = platforms[i] - scrollSpeed;
+            }
+        }
     }
     function checkHit(buttonCheck)
     {
         var hitError;
         var points;
         var rewardMessage;
-        if(buttonCheck == 70 && platCol[activeGap] == "blue" || buttonCheck == 74 && platCol[activeGap] == "red")
+        if(buttonCheck == 70 && platCol[activeGap] == "blue" || buttonCheck == 74 && platCol[activeGap] == "red"
+            || buttonCheck == 68 && platCol[activeGap] == "green")
         {
-            if(indicatorPosition > platforms[activeGap] -51 && indicatorPosition < platforms[activeGap] +51)
+            if(indicatorPosition > platforms[activeGap] -31 && indicatorPosition < platforms[activeGap] + gapWidth + 31)
             {
                 if(cooldown == false)
                 {
                     hitError = indicatorPosition - platforms[activeGap];
-                    if(Math.abs(hitError) < 11)
+                    if(Math.abs(hitError) < 21)
                     {
                         points = 300;
                         rewardMessage = "Perfect Hit!";
+                        document.getElementById("overlay300").style.display = "block";
+                        document.getElementById("healthBar").value += 10;
                         hit300++;
-                    }
-                    else if(Math.abs(hitError) < 21)
-                    {
-                        points = 100;
-                        rewardMessage = "Good Hit!";
-                        hit100++;
                     }
                     else if(Math.abs(hitError) < 31)
                     {
+                        points = 100;
+                        rewardMessage = "Good Hit!";
+                        document.getElementById("overlay100").style.display = "block";
+                        document.getElementById("healthBar").value += 10;
+                        hit100++;
+                    }
+                    else if(Math.abs(hitError) < 41)
+                    {
                         points = 50;
                         rewardMessage = "Poor Hit!";
+                        document.getElementById("overlay50").style.display = "block";
+                        document.getElementById("healthBar").value += 10;
                         hit50++;
                     }
                     else
                     {
                         points = 0;
                         rewardMessage = "Miss!";
+                        document.getElementById("overlayMiss").style.display = "block";
                         hit0++;
                     }
+                    overlayTimer = 1;
                     score += points;
-                    message = hitError + " = " + rewardMessage + " (" + points + ") ----- Score: " + score;
+                    message = "Score: " + score;
                     cooldown = true;
                 }
             }
@@ -380,44 +556,91 @@
                 platforms[i] = firstNoteDistance + parseInt(splitPos[1]);
             }
         }
+        else if(levelNr == 3)
+        {
+            for(var i = 0; i < data3.gaps.length; i++)
+            {
+                var splitPos = data3.gaps[i].split("-");
+                platPos[i] = parseInt(splitPos[1]);
+                platCol[i] = splitPos[0];
+                platforms[i] = firstNoteDistance + parseInt(splitPos[1]);
+            }
+        }
         
         
         /*var c = 1;
-        var n = -220;
+        var n = 12610;
         var col = "blue";
 
-        for(var i = 0; i < 45; i++)
+        for(var i = 0; i < 200; i++)
         {
             //console.log(platforms[i]);
             if(c == 1)
             {
-                col = "blue";
-                n += 220;
+                col = "green";
+                n += 398;
             }
             else if(c == 2)
             {
                 col = "blue";
-                n += 110;
+                n += 594;
             }
             else if(c == 3)
             {
-                col = "red";
-                n += 110;
+                col = "green";
+                n += 200;
+            }
+            else if(c == 4)
+            {
+                col = "blue";
+                n += 398;
                 c = 0;
             }
             console.log("\"" + col + "-" + n + "\",");
             c++;
         }*/
+        var c = 1;
+        var n = -150;
+        var colors = ["blue", "red", "gree", "orange"];
+
+        for(var i = 0; i < 1000; i++)
+        {
+            //console.log(platforms[i]);
+            if(c == 1)
+            {
+                col = colors[Math.floor(Math.random()*colors.length)];
+                n += 150;
+            }
+            else if(c == 2)
+            {
+                col = colors[Math.floor(Math.random()*colors.length)];
+                n += 150;
+                c = 0;
+            }
+            console.log("\"" + col + "-" + n + "\",");
+            c++;
+        }
     }
-    function levelEnd()
+    function levelEnd(result)
     {
         sourceBuffer.stop();
         gameOver = true;
-        document.getElementById("text").textContent = "End Result\n\nPerfect Hit (300 points): " + hit300 + "x\n"
-            + "Good Hit (100 points): " + hit100 + "x\n"
-            + "Poor Hit (50 points): " + hit50 + "x\n"
-            + "Miss (0 points): " + hit0 + "x\n\n"
+        if(result == "dead")
+        {
+            document.getElementById("text").textContent = "Deine Lebenspunkte sind auf 0 gefallen\n\nPerfekter Treffer (300 Punkte): " + hit300 + "x\n"
+            + "Guter Treffer (100 Punkte): " + hit100 + "x\n"
+            + "Schwacher Treffer (50 Punkte): " + hit50 + "x\n"
+            + "Nicht getroffen (0 Punkte): " + hit0 + "x\n\n"
             + "Score: " + score;
+        }
+        else if(result == "finish")
+        {
+            document.getElementById("text").textContent = "Endergebnis\n\nPerfect Hit (300 Punkte): " + hit300 + "x\n"
+            + "Guter Treffer (100 Punkte): " + hit100 + "x\n"
+            + "Schwacher Treffer (50 Punkte): " + hit50 + "x\n"
+            + "Nicht getroffen (0 Punkte): " + hit0 + "x\n\n"
+            + "Score: " + score;
+        }
         document.getElementById("overlay").style.display = "block";
     }
 

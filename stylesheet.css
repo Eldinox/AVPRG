@@ -11,6 +11,7 @@ div.mainContainer
 {
     /*border-style: double;*/
     width: 50%;
+    height: 690px;;
     margin-left: 25%;
     margin-top: 5%;
     /*background-color: white;*/
@@ -23,9 +24,17 @@ h1
 }
 h2
 {
+    width: 100%;
     font-size: 100%;
-    margin-top: -20%;
-    margin-left: 95%;
+    margin-top: 30%;
+    margin-left: 35%;
+}
+h3
+{
+    width: 100%;
+    font-size: 100%;
+    margin-top: 6.8%;
+    margin-left: 7%;
 }
 .menuButton
 {
@@ -136,11 +145,11 @@ h2
 }
 #lvl2Button:hover:before
 {
-    content:"Band - IrgendeinLied \a\a Schwierigkeit: 4/10";
+    content:"Twenty One Pilots - Heathens \a\a Schwierigkeit: 5/10";
 }
 #lvl3Button:hover:before
 {
-    content:"Auch Band - Auch irgendein Lied \a\a Schwierigkeit: 7/10";
+    content:"The Koxx - A Fool Moon Night \a\a Schwierigkeit: 10/10";
 }
 .ssButtons:hover::before
 {
@@ -158,6 +167,7 @@ h2
 {
     width: 5%;
     height: 20%;
+    font-weight: bold;
     margin-left: 15%;
     margin-top: 5%;
     display: inline-block;
@@ -170,6 +180,29 @@ h2
     border-radius: 15px;
     color: black;
 }
+.colorInd
+{
+    display: inline-block;
+    width: 5.75%;
+    height: 10px;
+    margin-left: 15%;
+}
+#ind1
+{
+    background-color: green;
+}
+#ind2
+{
+    background-color: blue;
+}
+#ind3
+{
+    background-color: red;
+}
+#ind4
+{
+    background-color: orange;
+}
 #canvas
 {
     width: 60%;
@@ -180,6 +213,20 @@ h2
     margin-left:30%;
 }
 #overlay
+{
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 2;
+    cursor: url("Assets/cursor.png") 64 64, auto;
+}
+#overlayPause
 {
     position: fixed;
     display: none;
@@ -235,6 +282,16 @@ h2
     z-index: 2;
     cursor: url("Assets/cursor.png") 64 64, auto;
 }
+.overlayPoints
+{
+    position: fixed;
+    display: none;
+    width: 20%;
+    height: 10%;
+    top: 27%;
+    left: 32%;
+    z-index: 2;
+}
 #text
 {
     position: absolute;
@@ -250,14 +307,14 @@ h2
 #textOptions
 {
     position: absolute;
-    text-align: center;
-    top: 50%;
-    left: 35%;
     font-size: 50px;
     color: white;
-    transform: translate(-50%,-50%);
-    -ms-transform: translate(-50%,-50%);
-    white-space: pre;
+}
+#textHighscore
+{
+    position: absolute;
+    font-size: 50px;
+    color: white;
 }
 #keyUI
 {
@@ -265,12 +322,6 @@ h2
     width: 70%;
     margin-left: 15%;
     height: 200px;
-}
-#optionsTable
-{
-    width: 240%;
-    margin-top: -40%;
-    font-size: 40px;
 }
 th
 {
@@ -313,4 +364,54 @@ th
     margin-bottom:5%;
     color: white;
     cursor: url("Assets/cursor.png") 64 64, auto;
+}
+#highscoreTable
+{
+    width: 60%;
+    margin-left: 20%;
+    border: 3px solid white;
+    border-radius: 15px;
+    padding-bottom: 5%;
+    table-layout: fixed;
+    text-align: center;
+}
+#optionsTable
+{
+    text-align: center;
+    width: 260%;
+    margin-top: -15%;
+    margin-left: 95%;
+    font-size: 40px;
+}
+.tablinks
+{
+    background: transparent;
+    color: white;
+    width: 30%;
+    height: 30px;
+    border-radius: 15px;
+    margin-bottom: 3%;
+    font-size: 40%;
+    cursor: url("Assets/cursor.png") 64 64, auto;
+}
+.overlayButtons
+{
+    width: 10%;
+    height: 50px;
+    margin-left: 26.3%;
+    margin-top: 43%;
+    font-size: 180%;
+    background-color: transparent;
+    color: white;
+    display: inline-block;
+    border: 5px solid white;
+    border-radius: 10px;
+    cursor: url("Assets/cursor.png") 64 64, auto;
+}
+#healthBar
+{
+    width: 30%;
+    margin-top: 1%;
+    margin-left: 21%;
+    position: absolute;
 }
