@@ -6,7 +6,7 @@
     <link rel=stylesheet href=stylesheet.css type=text/css>
     <script type="text/javascript" src="LevelData/wewillrockyou.js"></script>
     <script type="text/javascript" src="LevelData/heathens.js"></script>
-    <script type="text/javascript" src="LevelData/foolmoon.js"></script>
+    <script type="text/javascript" src="LevelData/heathenshard.js"></script>
 </head>
 <body>
     <div id=overlay>
@@ -62,6 +62,7 @@
         var btnDown3 = false;
         var btnDown4 = false;
         var firstClickDone = false;
+        var noDeath = false;
         var score = 0;
         var endDelay = 0;
         var gameOver = false;
@@ -174,7 +175,7 @@
             btn3.style.backgroundColor = "rgb(189, 207, 221)";
             document.getElementById("ind4").style.backgroundColor = "rgba(0,0,0,0.0)";
         }
-        else if(window.location.href.includes("FoolMoon"))
+        else if(window.location.href.includes("Hardmode"))
         {
             levelNr = 3;
             //difficulty scale
@@ -189,17 +190,35 @@
             sound2 = lvl3Sound2;
             sound3 = lvl3Sound3;
             sound4 = lvl3Sound4;
-            /*sound1 = new Audio(lvl2Sound1);
-            sound2 = new Audio(lvl2Sound2);
-            sound3 = new Audio(lvl2Sound3);
-            sound4 = new Audio(lvl2Sound4);*/
+            
+            //UI
+            btn1.style.backgroundColor = "rgb(189, 207, 221)";
+            btn2.style.backgroundColor = "rgb(189, 207, 221)";
+            btn3.style.backgroundColor = "rgb(189, 207, 221)";
+            document.getElementById("ind4").style.backgroundColor = "rgba(0,0,0,0.0)";
+        }
+        /*else if(window.location.href.includes("FoolMoon"))
+        {
+            levelNr = 4;
+            //difficulty scale
+            scrollSpeed = lvl3SS;
+            gapWidth = lvl3GW;
+            firstNoteDistance = lvl3FND;
+
+            //sound
+            backgroundSound = lvl3BS;
+            backgroundDelay = lvl3BD;
+            sound1 = lvl3Sound1;
+            sound2 = lvl3Sound2;
+            sound3 = lvl3Sound3;
+            sound4 = lvl3Sound4;
             
             //UI
             btn1.style.backgroundColor = "rgb(189, 207, 221)";
             btn2.style.backgroundColor = "rgb(189, 207, 221)";
             btn3.style.backgroundColor = "rgb(189, 207, 221)";
             btn4.style.backgroundColor = "rgb(189, 207, 221)";
-        }
+        }*/
 
         //Sound Effects
         /*soundNote1 = context1.createMediaElementSource(sound1);
@@ -296,7 +315,7 @@
 
             ctx.stroke();
 
-            document.getElementById("healthBar").value -= 0.2;
+            if(!noDeath)document.getElementById("healthBar").value -= 0.5;
 
             /*if(platPos[activeGap] +51 < indicatorPosition && cooldown == false)
             {
@@ -308,7 +327,8 @@
             if(activeGap == platforms.length - 1)
             {
                 endDelay++;
-                if(endDelay == platforms.length)levelEnd("finish");
+                noDeath = true;
+                if(endDelay == 60)levelEnd("finish");
             }
             if(overlayTimer > 0)
             {
@@ -330,7 +350,7 @@
             {
                 document.querySelector("#canvas").style.cursor = "url('Assets/cursor2.png')64 64, auto";
             }
-            if(document.getElementById("healthBar").value < 1 && levelNr != 3)
+            if(document.getElementById("healthBar").value < 1)
             {
                 levelEnd("dead");
             }
@@ -475,33 +495,33 @@
         if(buttonCheck == 70 && platCol[activeGap] == "blue" || buttonCheck == 74 && platCol[activeGap] == "red"
             || buttonCheck == 68 && platCol[activeGap] == "green")
         {
-            if(indicatorPosition > platforms[activeGap] -81 && indicatorPosition < platforms[activeGap] + gapWidth + 61)
+            if(indicatorPosition > platforms[activeGap] -41 && indicatorPosition < platforms[activeGap] + gapWidth + 41)
             {
                 if(cooldown == false)
                 {
                     hitError = indicatorPosition - platforms[activeGap];
-                    if(Math.abs(hitError) < 31)
+                    if(Math.abs(hitError) < 21)
                     {
                         points = 300;
                         rewardMessage = "Perfect Hit!";
                         document.getElementById("overlay300").style.display = "block";
-                        document.getElementById("healthBar").value += 10;
+                        document.getElementById("healthBar").value += 20;
                         hit300++;
                     }
-                    else if(Math.abs(hitError) < 41)
+                    else if(Math.abs(hitError) < 31)
                     {
                         points = 100;
                         rewardMessage = "Good Hit!";
                         document.getElementById("overlay100").style.display = "block";
-                        document.getElementById("healthBar").value += 10;
+                        document.getElementById("healthBar").value += 20;
                         hit100++;
                     }
-                    else if(Math.abs(hitError) < 51)
+                    else if(Math.abs(hitError) < 41)
                     {
                         points = 50;
                         rewardMessage = "Poor Hit!";
                         document.getElementById("overlay50").style.display = "block";
-                        document.getElementById("healthBar").value += 10;
+                        document.getElementById("healthBar").value += 20;
                         hit50++;
                     }
                     else
@@ -595,56 +615,57 @@
             console.log("\"" + col + "-" + n + "\",");
             c++;
         }*/
-        var c = 1;
-        var n = 12411;
+        /*var c = 1;
+        var n = 12511;
         var col = "blue";
 
-        for(var i = 0; i < 200; i++)
+        for(var i = 0; i < 120; i++)
         {
             if(c == 1)
             {
                 col = "green";
-                n += 197;
+                n += 398;
             }
             else if(c == 2)
             {
                 col = "red";
-                n += 197;
+                n += 199;
             }
-            else if(c == 3)
+            else if(c == 2)
             {
                 col = "blue";
-                n += 197;
+                n += 398;
             }
             else if(c == 4)
             {
                 col = "red";
-                n += 197;
+                n += 199;
             }
             else if(c == 5)
             {
                 col = "red";
-                n += 197;
+                n += 199;
             }
-            else if(c == 6)
+            else if(c == 3)
             {
                 col = "green";
-                n += 197;
+                n += 597;
             }
-            else if(c == 7)
+            else if(c == 4)
             {
                 col = "blue";
-                n += 197;
+                n += 199;
+                c = 0;
             }
             else if(c == 8)
             {
                 col = "red";
-                n += 197;
-                c = 0;
+                n += 199;
+                
             }
             console.log("\"" + col + "-" + n + "\",");
             c++;
-        }
+        }*/
         /*var c = 1;
         var n = -150;
         var colors = ["blue", "red", "gree", "orange"];
@@ -681,7 +702,7 @@
         }
         else if(result == "finish")
         {
-            document.getElementById("text").textContent = "Endergebnis\n\nPerfect Hit (300 Punkte): " + hit300 + "x\n"
+            document.getElementById("text").textContent = "Endergebnis\n\nPerfekter Treffer (300 Punkte): " + hit300 + "x\n"
             + "Guter Treffer (100 Punkte): " + hit100 + "x\n"
             + "Schwacher Treffer (50 Punkte): " + hit50 + "x\n"
             + "Nicht getroffen (0 Punkte): " + hit0 + "x\n\n"

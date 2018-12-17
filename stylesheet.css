@@ -145,11 +145,11 @@ h3
 }
 #lvl2Button:hover:before
 {
-    content:"Twenty One Pilots - Heathens \a\a Schwierigkeit: 5/10";
+    content:"Twenty One Pilots - Heathens \a\a Schwierigkeit: 4/10";
 }
 #lvl3Button:hover:before
 {
-    content:"The Koxx - A Fool Moon Night \a\a Schwierigkeit: 10/10";
+    content:"Twenty One Pilots - Heathens (Hardmode) \a\a Schwierigkeit: 7/10";
 }
 .ssButtons:hover::before
 {
