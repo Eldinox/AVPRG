@@ -6,7 +6,7 @@ const lvl3Sound3 = "sounds/Heathens/Heathens Kick1.mp3";
 const lvl3Sound4 = "";
 const lvl3BD = 0.5;
 const lvl3GW = 40;
-const lvl3FND = 2140;
+const lvl3FND = 2060;
 
 
 data3 = {"gaps":[
