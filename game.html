@@ -4,21 +4,23 @@
 	<Title>AVPRG</title>
     <meta charset=utf-8>
     <link rel=stylesheet href=stylesheet.css type=text/css>
+    <!-- Level-Datei Importe -->
     <script type="text/javascript" src="LevelData/wewillrockyou.js"></script>
     <script type="text/javascript" src="LevelData/heathens.js"></script>
     <script type="text/javascript" src="LevelData/heathenshard.js"></script>
 </head>
 <body>
-    <div id=overlay>
+    <div id=overlay><!-- Endresultat Overlay -->
         <div id=text></div>
         <button class= overlayButtons id=overlayBackButton onclick="location.href='index.html'">Hauptmenü</button>
         <button class= overlayButtons id=overlayRetryButton1 onclick="location.reload()">Noch einmal</button>
     </div>
-    <div id=overlayPause>
+    <div id=overlayPause><!-- Pausemenü Overlay -->
         <div id=text>Pause</div>
         <button class= overlayButtons id=overlayBackButton onclick="location.href='index.html'">Hauptmenü</button>
         <button class= overlayButtons id=overlayRetryButton1 onclick="location.reload()">Noch einmal</button>
     </div>
+    <!-- Trefferpunkte Overlay -->	
     <div id=overlay300 class=overlayPoints>
         <div id=text>300</div>
     </div>
@@ -31,8 +33,11 @@
     <div id=overlayMiss class=overlayPoints>
         <div id=text>Miss</div>
     </div>
+    <!-- Lebensbalken erstellen -->
     <progress id=healthBar value=100 max=100></progress>
+    <!-- Canvas erstellen -->	
     <canvas id=canvas width=1200 height=800></canvas>
+    <!-- UI Tasten erstellen -->
     <div id=keyUI>
         <div class=playKeys id=playKey1>D</div>
         <div class=playKeys id=playKey2>F</div>
@@ -44,71 +49,59 @@
         <div class=colorInd id=ind4></div>
     </div>
     <script>
+	//Standard-Levelwerte
         const FPS = 30;
-        const playerSize = 70;
+        const playerSize = 70;			//in px
+	var indicatorPosition = 0;		//X-Koordinate des Indikators
+	var message = "Score: 0";
+	var cooldown = false;			//Cooldown für Treffer
+        var activeGap = 0;			//X-Koordinate der nächsten zu treffenden Lücke
+	var firstClickDone = false;		//Wird true wenn aktuelle Lücke getroffen wird
+        var noDeath = false;			//Erfolgreicher Levelabschluss
+        var score = 0;
+        var endDelay = 0;			//Delay für das Endresultat Overlay in Frames
+        var gameOver = false;
+	var overlayTimer = 0;			//Anzeigedauer vom Trefferpunkte Overlay in Frames
+        var mouseInactiveTimer = 0;		//Inaktivitätsdauer des Mauszeigers in Frames(Ausblenden nach 70 Frames)
+	var hit300 = 0;				//Anzahl der jeweiligen Treffertypen
+        var hit100 = 0;
+        var hit50 = 0;
+        var hit0 = 0;
+	    
+	//Spieltasten und Tastenstatus
         var btn1 = document.querySelector("#playKey1");
         var btn2 = document.querySelector("#playKey2");
         var btn3 = document.querySelector("#playKey3");
         var btn4 = document.querySelector("#playKey4");
-        var scrollSpeed;  //Pixel pro Frame
-        var gapWidth;
-        var firstNoteDistance;
-        var indicatorPosition = 0;
-        var message = "Score: 0";
-        var cooldown = false;
-        var activeGap = 0;
-        var btnDown1 = false;
+	var btnDown1 = false;
         var btnDown2 = false;
         var btnDown3 = false;
         var btnDown4 = false;
-        var firstClickDone = false;
-        var noDeath = false;
-        var score = 0;
-        var endDelay = 0;
-        var gameOver = false;
-        var context = new AudioContext();
-	    var request = new XMLHttpRequest();
-        var sourceBuffer = context.createBufferSource();
-        var btn1;
-        var btn2;
-        var btn3;
-        var btn4;
-        var levelNr;
-        var sound1;
+	
+	//Leveleigenschaften
+	var levelNr;				//ID des Levels
+        var scrollSpeed;			//Lückengeschwindigkeit in px pro Frame
+        var gapWidth;				//Breite der Lücken in px
+        var firstNoteDistance;			//Distanz zur ersten Lücke in px
+	var sound1;				//Tastentöne
         var sound2;
         var sound3;
         var sound4;
-        /*var context1 = new AudioContext();
-        var context2 = new AudioContext();
-        var context3 = new AudioContext();
-        var context4 = new AudioContext();
-        var soundNote1;
-        var soundNote2;
-        var soundNote3;
-        var soundNote4;
-        var gainNode1;
-        var gainNode2;
-        var gainNode3;
-        var gainNode4;*/
-
-        var hit300 = 0;
-        var hit100 = 0;
-        var hit50 = 0;
-        var hit0 = 0;
-
-        var overlayTimer = 0;
-        var mouseInactiveTimer = 0;
-
-	    var backgroundSound;
-	    var backgroundDelay;
-
+	var backgroundSound;			//Hintergrundmusik
+	var backgroundDelay;			//Delay der Hintergrundmusik
+	    
+        //Hintergrundmusik
+	var context = new AudioContext();
+	var request = new XMLHttpRequest();
+        var sourceBuffer = context.createBufferSource();
+        
+        //Canvas
         var canv = document.getElementById("canvas");
         var ctx = canv.getContext("2d");
-        
         ctx.font = "20px Arial";
 
-        var player;
-
+	//Spieler und Lücken-Arrays
+        var player;				//Spielerkoordinaten und -dimensionen in px
         var platforms = [];
         var platPos = [];
         var platCol = [];
@@ -129,20 +122,16 @@
         if(window.location.href.includes("WeWillRockYou"))
         {
             levelNr = 1;
-            //difficulty scale
+            //Schwierigkeitsgrad
             scrollSpeed = lvl1SS;
             gapWidth = lvl1GW;
             firstNoteDistance = lvl1FND;
 
-            //sound
+            //Audio
             backgroundSound = lvl1BS;
             backgroundDelay = lvl1BD;
             sound1 = lvl1Sound1;
             sound2 = lvl1Sound2;
-            /*sound1 = new Audio(lvl1Sound1);
-            sound2 = new Audio(lvl1Sound2);
-            sound3 = new Audio(lvl1Sound3);
-            sound4 = new Audio(lvl1Sound4);*/
 
             //UI
             btn2.style.backgroundColor = "rgb(189, 207, 221)";
@@ -153,21 +142,17 @@
         else if(window.location.href.includes("Heathens"))
         {
             levelNr = 2;
-            //difficulty scale
+            //Schwierigkeitsgrad
             scrollSpeed = lvl2SS;
             gapWidth = lvl2GW;
             firstNoteDistance = lvl2FND;
 
-            //sound
+            //Audio
             backgroundSound = lvl2BS;
             backgroundDelay = lvl2BD;
             sound1 = lvl2Sound1;
             sound2 = lvl2Sound2;
             sound3 = lvl2Sound3;
-            /*sound1 = new Audio(lvl2Sound1);
-            sound2 = new Audio(lvl2Sound2);
-            sound3 = new Audio(lvl2Sound3);
-            sound4 = new Audio(lvl2Sound4);*/
             
             //UI
             btn1.style.backgroundColor = "rgb(189, 207, 221)";
@@ -178,12 +163,12 @@
         else if(window.location.href.includes("Hardmode"))
         {
             levelNr = 3;
-            //difficulty scale
+            //Schwierigkeitsgrad
             scrollSpeed = lvl3SS;
             gapWidth = lvl3GW;
             firstNoteDistance = lvl3FND;
 
-            //sound
+            //Audio
             backgroundSound = lvl3BS;
             backgroundDelay = lvl3BD;
             sound1 = lvl3Sound1;
@@ -197,67 +182,30 @@
             btn3.style.backgroundColor = "rgb(189, 207, 221)";
             document.getElementById("ind4").style.backgroundColor = "rgba(0,0,0,0.0)";
         }
-        /*else if(window.location.href.includes("FoolMoon"))
-        {
-            levelNr = 4;
-            //difficulty scale
-            scrollSpeed = lvl3SS;
-            gapWidth = lvl3GW;
-            firstNoteDistance = lvl3FND;
 
-            //sound
-            backgroundSound = lvl3BS;
-            backgroundDelay = lvl3BD;
-            sound1 = lvl3Sound1;
-            sound2 = lvl3Sound2;
-            sound3 = lvl3Sound3;
-            sound4 = lvl3Sound4;
-            
-            //UI
-            btn1.style.backgroundColor = "rgb(189, 207, 221)";
-            btn2.style.backgroundColor = "rgb(189, 207, 221)";
-            btn3.style.backgroundColor = "rgb(189, 207, 221)";
-            btn4.style.backgroundColor = "rgb(189, 207, 221)";
-        }*/
-
-        //Sound Effects
-        /*soundNote1 = context1.createMediaElementSource(sound1);
-        soundNote2 = context2.createMediaElementSource(sound2);
-        soundNote3 = context3.createMediaElementSource(sound3);
-        gainNode1 = context1.createGain();
-        gainNode2 = context2.createGain();
-        gainNode3 = context3.createGain();
-        gainNode1.gain.value = localStorage.effectVolume * 0.01;
-        gainNode2.gain.value = localStorage.effectVolume * 0.01;
-        gainNode3.gain.value = localStorage.effectVolume * 0.01;
-        soundNote1.connect(gainNode1);
-        soundNote2.connect(gainNode2);
-        soundNote3.connect(gainNode3);
-        gainNode1.connect(context1.destination);
-        gainNode2.connect(context2.destination);
-        gainNode3.connect(context3.destination);*/
-
-        //Background Music
-	    var gainNode = context.createGain();
+        //Hintergrundmusik
+	var gainNode = context.createGain();
         request.open('GET', backgroundSound, true);
-	    request.responseType = 'arraybuffer';
+	request.responseType = 'arraybuffer';
         request.onload = function () 
         {
-	    	var undecodedAudio = request.response;
+	    var undecodedAudio = request.response;
             context.decodeAudioData(undecodedAudio, function(buffer) 
             {
-	    		sourceBuffer.buffer = buffer;
-	    		//sourceBuffer.connect(context.destination);
-		    	sourceBuffer.connect(gainNode);
-		    	gainNode.connect(context.destination);
+	    	sourceBuffer.buffer = buffer;
+		sourceBuffer.connect(gainNode);
+		gainNode.connect(context.destination);
                 gainNode.gain.value = localStorage.musicVolume * 0.01;
                 sourceBuffer.start(context.currentTime + backgroundDelay);
-	    	});
-	    };
+	    });
+	};
         request.send();
 
+	//Füllt Lückenarray mit Daten der Lücken aus der Level-Datei
         readLevelData();
-        //Gameloop
+	    
+	    
+        //Erstellt Gameloop
         setInterval(update, 1000 / FPS);
     }
 
@@ -265,21 +213,19 @@
     {
         if(!gameOver)
         {
-            //message = activeGap;
-        
-            //draw background
+            //Zeichne Hintergrund
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canv.width, canv.height);
 
-            //draw backgroundplatform
+            //Zeichne Plattform
             ctx.fillStyle = "white";
             ctx.fillRect(0, player.y+playerSize / 20, canv.width, 30);
 
-            //draw text
+            //Zeichne Score-Text
             ctx.fillStyle = "white";
             ctx.fillText(message, canv.width - 180, 50);
 
-            //draw player
+            //Zeichne Spieler
             ctx.fillStyle = "green";
             ctx.fillRect(player.x, player.y - player.height, player.width, player.height);
             ctx.strokeStyle = "white";
@@ -292,11 +238,13 @@
             ctx.lineTo(player.x, player.y);
             ctx.stroke();
             
-            //calculate new platform position
+            //Berechne neue Lückenpositionen
             calcFloor();
+		
+	    //Berechne aktive Lücke	
             calcNextGap();
 
-            //draw platform
+            //Zeichne Lücken
             for(var i = 0; i < platforms.length; i++)
             {
                 if(platforms[i] < canv.width && platforms[i] > 0 - gapWidth)
@@ -306,30 +254,26 @@
                 }
             }
 
-            //draw indicator
+            //Zeichne Indikator
             ctx.strokeStyle = "red";
             ctx.lineWidth = playerSize / 10;
             ctx.beginPath();
             ctx.moveTo(player.x * 2.2, player.y - player.height * 1.5);
             ctx.lineTo(player.x * 2.2, player.y + player.height / 2);
-
             ctx.stroke();
 
+	    //Zeichne und Aktualisiere Lebensbalken
             if(!noDeath)document.getElementById("healthBar").value -= 0.3;
 
-            /*if(platPos[activeGap] +51 < indicatorPosition && cooldown == false)
-            {
-                console.log("nop");
-                hit0++;
-                cooldown = true;
-            }*/
-
+	    //Beende Level
             if(activeGap == platforms.length - 1)
             {
                 endDelay++;
                 noDeath = true;
                 if(endDelay == 60)levelEnd("finish");
             }
+		
+	    //Trefferpunkte Overlay anzeigen
             if(overlayTimer > 0)
             {
                 if(overlayTimer < 8)
@@ -345,11 +289,16 @@
                     overlayTimer = 0;
                 }
             }
+		
+	    //Berechnung der Inaktivitätsdauer des Mauszeigers
             mouseInactiveTimer++;
+	    //Ausblenden nach 70 Frames
             if(mouseInactiveTimer > 70)
             {
                 document.querySelector("#canvas").style.cursor = "url('Assets/cursor2.png')64 64, auto";
             }
+		
+	    //Beende Level wenn Lebenspunkte auf 0 fallen
             if(document.getElementById("healthBar").value < 1)
             {
                 levelEnd("dead");
@@ -362,6 +311,88 @@
         mouseInactiveTimer = 0;
         document.querySelector("#canvas").style.cursor = "url('Assets/cursor.png')64 64, auto";
     }
+	    
+    window.onkeydown = function(e)
+    {
+        var key = e.keyCode ? e.keyCode : e.which;
+
+        if(key == 27) //27 = 'Escape' lässt das Pause Overlay erscheinen
+        {
+            document.getElementById("overlayPause").style.display = "block";
+        }
+	    
+	//Spieltasten werden rot gefärbt, spielen Audio ab und Trefferüberprüfung wird ausgelöst   
+        if(key == 68 && !gameOver && levelNr == 2 || key == 68 && !gameOver && levelNr == 3) //68 = 'D'
+        {
+            btn1.style.backgroundColor = "lightcoral";
+            checkHit(68);                               
+            if(!btnDown1)
+            {
+                var context = new AudioContext();
+                sound = new Audio(sound3);
+                soundNote = context.createMediaElementSource(sound);
+                var gainNode = context.createGain();
+                gainNode.gain.value = localStorage.effectVolume * 0.01;
+                soundNote.connect(gainNode);
+                gainNode.connect(context.destination);
+                sound.play();
+            }
+            btnDown1 = true;
+        }
+        if(key == 70 && !gameOver) //70 = 'F'
+        {
+            btn2.style.backgroundColor = "lightcoral";
+            checkHit(70);
+            if(!btnDown2)
+            {
+                var context = new AudioContext();
+                sound = new Audio(sound1);
+                soundNote = context.createMediaElementSource(sound);
+                var gainNode = context.createGain();
+                gainNode.gain.value = localStorage.effectVolume * 0.01;
+                soundNote.connect(gainNode);
+                gainNode.connect(context.destination);
+                sound.play();
+            }
+            btnDown2 = true;
+        }
+        if(key == 74 && !gameOver) //74 = 'J'
+        {
+            btn3.style.backgroundColor = "lightcoral";
+            checkHit(74);
+            if(!btnDown3)
+            {
+                var context = new AudioContext();
+                sound = new Audio(sound2);
+                soundNote = context.createMediaElementSource(sound);
+                var gainNode = context.createGain();
+                gainNode.gain.value = localStorage.effectVolume * 0.01;
+                soundNote.connect(gainNode);
+                gainNode.connect(context.destination);
+                sound.play();
+            }
+            btnDown3 = true;
+        }
+        if(key == 75 && !gameOver && levelNr == 3) //75 = 'K'
+        {
+            btn4.style.backgroundColor = "lightcoral";
+            checkHit(75);
+            if(!btnDown4)
+            {
+                var context = new AudioContext();
+                sound = new Audio(sound4);
+                soundNote = context.createMediaElementSource(sound);
+                var gainNode = context.createGain();
+                gainNode.gain.value = localStorage.effectVolume * 0.01;
+                soundNote.connect(gainNode);
+                gainNode.connect(context.destination);
+                sound.play();
+            }
+            btnDown4 = true;
+        }
+    }
+
+    //Entfärbung der Spieltasten
     window.onkeyup = function(e)
     {
         var key = e.keyCode ? e.keyCode : e.which;
@@ -386,83 +417,8 @@
             btnDown4 = false;
         }
     }
-    window.onkeydown = function(e)
-    {
-        var key = e.keyCode ? e.keyCode : e.which;
-
-        if(key == 27)
-        {
-            document.getElementById("overlayPause").style.display = "block";
-        }
-        if(key == 68 && !gameOver && levelNr == 2 || key == 68 && !gameOver && levelNr == 3)
-        {
-            btn1.style.backgroundColor = "lightcoral";
-            checkHit(68);                               
-            if(!btnDown1)
-            {
-                var context = new AudioContext();
-                sound = new Audio(sound3);
-                soundNote = context.createMediaElementSource(sound);
-                var gainNode = context.createGain();
-                gainNode.gain.value = localStorage.effectVolume * 0.01;
-                soundNote.connect(gainNode);
-                gainNode.connect(context.destination);
-                sound.play();
-            }
-            btnDown1 = true;
-        }
-        if(key == 70 && !gameOver)
-        {
-            btn2.style.backgroundColor = "lightcoral";
-            checkHit(70);
-            if(!btnDown2)
-            {
-                var context = new AudioContext();
-                sound = new Audio(sound1);
-                soundNote = context.createMediaElementSource(sound);
-                var gainNode = context.createGain();
-                gainNode.gain.value = localStorage.effectVolume * 0.01;
-                soundNote.connect(gainNode);
-                gainNode.connect(context.destination);
-                sound.play();
-            }
-            btnDown2 = true;
-        }
-        if(key == 74 && !gameOver)
-        {
-            btn3.style.backgroundColor = "lightcoral";
-            checkHit(74);
-            if(!btnDown3)
-            {
-                var context = new AudioContext();
-                sound = new Audio(sound2);
-                soundNote = context.createMediaElementSource(sound);
-                var gainNode = context.createGain();
-                gainNode.gain.value = localStorage.effectVolume * 0.01;
-                soundNote.connect(gainNode);
-                gainNode.connect(context.destination);
-                sound.play();
-            }
-            btnDown3 = true;
-        }
-        if(key == 75 && !gameOver && levelNr == 3)
-        {
-            btn4.style.backgroundColor = "lightcoral";
-            checkHit(75);
-            if(!btnDown4)
-            {
-                var context = new AudioContext();
-                sound = new Audio(sound4);
-                soundNote = context.createMediaElementSource(sound);
-                var gainNode = context.createGain();
-                gainNode.gain.value = localStorage.effectVolume * 0.01;
-                soundNote.connect(gainNode);
-                gainNode.connect(context.destination);
-                sound.play();
-            }
-            btnDown4 = true;
-        }
-    }
+	    
+    //Berechnet neue Lückenpositionen    
     function calcFloor()
     {
         if(levelNr == 1)
@@ -487,11 +443,12 @@
             }
         }
     }
+	    
+    //Überprüft Trefferfehler bei Tastendruck, berechnet Punktzahl anhand von Genauigkeit, aktiviert Trefferpunkte Overlay und füllt Lebensbalken bei Treffer	    
     function checkHit(buttonCheck)
     {
         var hitError;
         var points;
-        var rewardMessage;
         if(buttonCheck == 70 && platCol[activeGap] == "blue" || buttonCheck == 74 && platCol[activeGap] == "red"
             || buttonCheck == 68 && platCol[activeGap] == "green")
         {
@@ -503,7 +460,6 @@
                     if(Math.abs(hitError) < 21)
                     {
                         points = 300;
-                        rewardMessage = "Perfect Hit!";
                         document.getElementById("overlay300").style.display = "block";
                         document.getElementById("healthBar").value += 20;
                         hit300++;
@@ -511,7 +467,6 @@
                     else if(Math.abs(hitError) < 31)
                     {
                         points = 100;
-                        rewardMessage = "Good Hit!";
                         document.getElementById("overlay100").style.display = "block";
                         document.getElementById("healthBar").value += 20;
                         hit100++;
@@ -519,7 +474,6 @@
                     else if(Math.abs(hitError) < 41)
                     {
                         points = 50;
-                        rewardMessage = "Poor Hit!";
                         document.getElementById("overlay50").style.display = "block";
                         document.getElementById("healthBar").value += 20;
                         hit50++;
@@ -527,7 +481,6 @@
                     else
                     {
                         points = 0;
-                        rewardMessage = "Miss!";
                         document.getElementById("overlayMiss").style.display = "block";
                         hit0++;
                     }
@@ -539,6 +492,8 @@
             }
         }
     }
+	    
+    //Berechnung der nächsten zu treffenden Lücke
     function calcNextGap()
     {
         if((platforms[activeGap] + (platforms[activeGap + 1] - platforms[activeGap]) / 2) < indicatorPosition)
@@ -550,6 +505,8 @@
             }
         }
     }
+	    
+    //Füllt das Lücken-Array mit den Werten aus der Level-Datei	    
     function readLevelData()
     {
         if(levelNr == 1)
@@ -582,112 +539,9 @@
                 platforms[i] = firstNoteDistance + parseInt(splitPos[1]);
             }
         }
-        
-        
-        /*var c = 1;
-        var n = 12610;
-        var col = "blue";
-
-        for(var i = 0; i < 200; i++)
-        {
-            //console.log(platforms[i]);
-            if(c == 1)
-            {
-                col = "green";
-                n += 398;
-            }
-            else if(c == 2)
-            {
-                col = "blue";
-                n += 594;
-            }
-            else if(c == 3)
-            {
-                col = "green";
-                n += 200;
-            }
-            else if(c == 4)
-            {
-                col = "blue";
-                n += 398;
-                c = 0;
-            }
-            console.log("\"" + col + "-" + n + "\",");
-            c++;
-        }*/
-        /*var c = 1;
-        var n = 12511;
-        var col = "blue";
-
-        for(var i = 0; i < 120; i++)
-        {
-            if(c == 1)
-            {
-                col = "green";
-                n += 398;
-            }
-            else if(c == 2)
-            {
-                col = "red";
-                n += 199;
-            }
-            else if(c == 2)
-            {
-                col = "blue";
-                n += 398;
-            }
-            else if(c == 4)
-            {
-                col = "red";
-                n += 199;
-            }
-            else if(c == 5)
-            {
-                col = "red";
-                n += 199;
-            }
-            else if(c == 3)
-            {
-                col = "green";
-                n += 597;
-            }
-            else if(c == 4)
-            {
-                col = "blue";
-                n += 199;
-                c = 0;
-            }
-            else if(c == 8)
-            {
-                col = "red";
-                n += 199;
-                
-            }
-            console.log("\"" + col + "-" + n + "\",");
-            c++;
-        }*/
-        /*var c = 1;
-        var n = -150;
-        var colors = ["blue", "red", "gree", "orange"];
-
-        for(var i = 0; i < 1000; i++)
-        {
-            //console.log(platforms[i]);
-            if(c == 1)
-            {
-                col = colors[Math.floor(Math.random()*colors.length)];
-                n += 150;
-            }
-            else if(c == 2)
-            {
-                col = colors[Math.floor(Math.random()*colors.length)];
-                n += 150;
-                c = 0;
-            }
-            console.log("\"" + col + "-" + n + "\",");
-            c++;
-        }*/
     }
+	    
+    //Beendet das Level und zeigt das Endresultat Overlay	    
     function levelEnd(result)
     {
         sourceBuffer.stop();
@@ -709,72 +563,7 @@
             + "Score: " + score;
         }
         document.getElementById("overlay").style.display = "block";
-    }
-
-	    
-	    //Play Soundfile
-        /*document.getElementById("Button1").addEventListener("click", function() {
-        
-        document.getElementById("outputText").innerHTML = "Test1";
-        var context = new AudioContext(),
-        sound = new Audio("sounds/sound1.wav"),
-        soundNote = context.createMediaElementSource(sound);
-        var gainNode = context.createGain();
-        gainNode.gain.value = 0.8;
-        soundNote.connect(gainNode);
-        gainNode.connect(context.destination);
-        sound.play();
-        }); */
-	    
-	    // oscillator
-	    
-	  /*  var context = new AudioContext();
-	var oscillatorNode = context.createOscillator();
-	oscillatorNode.connect(context.destination);
-	oscillatorNode.frequency.value = 880;
-	oscillatorNode.type = "square";
-	oscillatorNode.start(context.currentTime);
-	oscillatorNode.stop(context.currentTime + 1);*/
-	    
-	// oscillator + gain
-	    
-	   /*var context = new AudioContext();
-		var oscillatorNode = context.createOscillator();
-		var gainNode = context.createGain();
-		oscillatorNode.connect(gainNode);
-	    	oscillatorNode.frequency.value = 880;
-		oscillatorNode.type = "square";
-		gainNode.connect(context.destination);
-		gainNode.gain.value = 0.001;
-		oscillatorNode.start(context.currentTime);
-		oscillatorNode.stop(context.currentTime + 1);*/
-	    
-	    
-	    //Theremin
-	  /* var context = new AudioContext();
-		oscillator = null
-		mousedown = false
-		gainNode = context.createGain();
-	    document.body.addEventListener('mousedown', function(e){
-		mousedown = true;
-		oscillator = context.createOscillator();
-		oscillator.connect(gainNode);
-		gainNode.connect(context.destination);
-		calculateFreqAndGain(e);
-		oscillator.start(context.currentTime);
-	    });
-	    
-	 function calculateFreqAndGain(e) {
-		var maxFreq = 2000;
-		    minFreq = 20;
-		    maxGain = 1;
-		    minGain = 0;
-		oscillator.frequency.value = (((e.clientX / window.innerWidth) * maxFreq) + minFreq);
-		gainNode.gain.value = (((e.clientY / window.innerHeight) * maxGain) + minGain);
-		 
-		oscillator.frequency.setTargetAtTime((((e.clientX / window.innerWidth) * maxFreq) + minFreq), context.currentTime, 0.01);
-	    }*/
-	    
+    }   
     </script>
 </body>
 </html>
