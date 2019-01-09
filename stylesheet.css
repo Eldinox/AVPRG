@@ -9,12 +9,10 @@ body
 }
 div.mainContainer
 {
-    /*border-style: double;*/
     width: 50%;
     height: 690px;;
     margin-left: 25%;
     margin-top: 5%;
-    /*background-color: white;*/
     text-align: center;
     padding-bottom: 10%;
 }
@@ -99,7 +97,7 @@ h3
     height: 52px;
     font-size: 160%;
 }
-.ssButtons
+.ssButtons      //SongSelectButtons 
 {
     background-image: linear-gradient(to right, #25aae1, #40e495, #30dd8a, #33cccc);
     box-shadow: 0 4px 15px 0 rgba(49, 196, 190, 0.75);
@@ -159,11 +157,7 @@ h3
 {
     margin-top:15%;
 }
-.songPrev
-{
-    width:10%;
-}
-.playKeys
+.playKeys       //Spieltasten
 {
     width: 5%;
     height: 20%;
@@ -180,7 +174,7 @@ h3
     border-radius: 15px;
     color: black;
 }
-.colorInd
+.colorInd       //Farbige Anzeige unter der jeweiligen Spieltaste
 {
     display: inline-block;
     width: 5.75%;
@@ -208,11 +202,7 @@ h3
     width: 60%;
     margin-left: 20%;
 }
-#canvasMenu
-{
-    margin-left:30%;
-}
-#overlay
+#overlay        //Endresultat Overlay
 {
     position: fixed;
     display: none;
@@ -282,7 +272,7 @@ h3
     z-index: 2;
     cursor: url("Assets/cursor.png") 64 64, auto;
 }
-.overlayPoints
+.overlayPoints      //Trefferpunkte Overlay
 {
     position: fixed;
     display: none;
@@ -292,7 +282,7 @@ h3
     left: 32%;
     z-index: 2;
 }
-#text
+#text       //Endresultat Overlay Text
 {
     position: absolute;
     text-align: center;
@@ -316,7 +306,7 @@ h3
     font-size: 50px;
     color: white;
 }
-#keyUI
+#keyUI      //Hintergrund der Spieletasten
 {
     background-color: rgb(24, 22, 22);
     width: 70%;
@@ -327,7 +317,7 @@ th
 {
    padding-top: 5%;
 }
-.sliders
+.sliders        //Optionsslider
 {
     width: 100%;
     height: 35px;
@@ -355,7 +345,7 @@ th
     background: rgb(96, 250, 255);
     cursor: url("Assets/cursor.png") 64 64, auto;
 }
-.keySetter
+.keySetter      //Tastenbelegung in den Optionen
 {
     background:transparent;
     font-size: 30px;
@@ -383,7 +373,7 @@ th
     margin-left: 95%;
     font-size: 40px;
 }
-.tablinks
+.tablinks       //Tabellenauswahl in der Highscoreliste
 {
     background: transparent;
     color: white;
@@ -394,7 +384,7 @@ th
     font-size: 40%;
     cursor: url("Assets/cursor.png") 64 64, auto;
 }
-.overlayButtons
+.overlayButtons     //Tasten in den Overlays
 {
     width: 10%;
     height: 50px;
