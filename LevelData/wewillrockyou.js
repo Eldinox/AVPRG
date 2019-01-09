@@ -1,14 +1,16 @@
-const lvl1SS = 10;
+//Audio Datein
 const lvl1BS = "sounds/We will Rock you/WWRY background.mp3";
 const lvl1Sound1 = "sounds/We will Rock you/Beat.mp3";
 const lvl1Sound2 = "sounds/We will Rock you/Clapp.mp3";
 const lvl1Sound3 = "";
 const lvl1Sound4 = "";
+//Level Daten (ScrollSpeed, BackgroundDelay, GapWidth, FirstNoteDistance)
+const lvl1SS = 10;
 const lvl1BD = 0.98;
 const lvl1GW = 50;
 const lvl1FND = 800;
 
-
+//Farbe und Position der Lücken (Abstand in px)
 data1 = {"gaps":[
 "blue-0",
 "blue-110", 
