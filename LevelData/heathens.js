@@ -1,14 +1,16 @@
-const lvl2SS = 20;
+//Audio Datein
 const lvl2BS = "sounds/Heathens/Heathens Background.mp3";
 const lvl2Sound1 = "sounds/Heathens/Heathens Drum1.mp3";
 const lvl2Sound2 = "sounds/Heathens/Heathens Hat1.mp3";
 const lvl2Sound3 = "sounds/Heathens/Heathens Kick1.mp3";
 const lvl2Sound4 = "";
+//Level Daten (ScrollSpeed, BackgroundDelay, GapWidth, FirstNoteDistance)
+const lvl2SS = 20;
 const lvl2BD = 0.5;
 const lvl2GW = 40;
 const lvl2FND = 2050;
 
-
+//Farbe und Position der Lücken (Abstand in px)
 data2 = {"gaps":[
 "red-0",
 "red-796", 
