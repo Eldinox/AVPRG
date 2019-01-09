@@ -7,6 +7,7 @@
     <script type="text/javascript" src="Assets/highscores.js"></script>
 </head>
 <body>
+    <!-- Hauptmenue -->
     <div class=mainContainer>
         <h1>Beat Läufer</h1>
         <div class=buttonContainer>
@@ -21,6 +22,8 @@
             </button>
         </div>
     </div>
+	
+    <!-- Levelauswahl -->
     <div id=overlaySongSelect>
         <button id=closeButton onclick="closeOverlay();"></button>
         <button class=ssButtons id=lvl1Button onclick="location.href='game.html?WeWillRockYou'">
@@ -33,6 +36,8 @@
             <span>Twenty One Pilots - Heathens (Hardmode)</span>
         </button>
     </div>
+	
+    <!-- Optionen -->
     <div id=overlayOptions>
         <div id=textOptions>
             <h2>Optionen</h2>
@@ -72,6 +77,8 @@
         <button id=closeButton onclick="closeOverlay();"></button>
         <button id=saveButton onclick="saveOptions();">Speichern</button>
     </div>
+	
+    <!-- Highscoreliste -->
     <div id=overlayHighscores>
         <div id=textHighscore>
             <h3>Highscore Liste</h3>
@@ -97,14 +104,21 @@
         </div>
         <button id=closeButton onclick="closeOverlay();"></button>
     </div>
+	
     <script>
+	//Ausblenden der Overlays beim Aufrufen der Seite
         document.getElementById("overlaySongSelect").style.display = "none";
         document.getElementById("overlayOptions").style.display = "none";
         document.getElementById("overlayHighscores").style.display = "none";
+	    
+	//Lokales Speichern der Lautstärkeoptionen
         localStorage.setItem("musicVolume", musicVolume.value);
         localStorage.setItem("effectVolume", effectVolume.value);
+	    
+	//Highscore Tabelle
         var table = document.getElementById("highscoreTable");
         
+	//Anzeigen der Overlays
         function openSongSelect()
         {
             document.getElementById("overlaySongSelect").style.display = "block";
@@ -117,12 +131,15 @@
         {
             document.getElementById("overlayHighscores").style.display = "block";
         }
+	//Schließen der Overlays
         function closeOverlay()
         {
             document.getElementById("overlayOptions").style.display = "none";
             document.getElementById("overlayHighscores").style.display = "none";
             document.getElementById("overlaySongSelect").style.display = "none";
         }
+	    
+	//Laden der Standard Highscoreliste    
         function loadScore(levelNmb)
         {
             if(levelNmb == 1)
@@ -165,6 +182,8 @@
                 table.rows[5].cells[1].innerHTML = highscoreList3[9];
             }
         }
+	    
+	//Speichern der gewählten Einstellungen
         function saveOptions()
         {
             localStorage.setItem("musicVolume", musicVolume.value);
@@ -172,63 +191,5 @@
             document.getElementById("overlayOptions").style.display = "none";
         }
     </script>
-    <!--<canvas id=canvasMenu width=800 height=200></canvas>
-    <script>
-        const FPS = 30;
-        const backgroundSound = "sounds/Menu/Trancyvania.mp3";
-        const backgroundDelay = 0.1;
-
-        var canv = document.getElementById("canvasMenu");
-        var ctx = canv.getContext("2d");
-        var context = new AudioContext();
-	    var request = new XMLHttpRequest();
-        var sourceBuffer = context.createBufferSource();
-
-        var platforms = [450];
-
-        request.open('GET', backgroundSound, true);
-	    request.responseType = 'arraybuffer';
-        request.onload = function () 
-        {
-	    	var undecodedAudio = request.response;
-            context.decodeAudioData(undecodedAudio, function (buffer) 
-            {
-	    		sourceBuffer.buffer = buffer;
-                sourceBuffer.connect(context.destination);
-                sourceBuffer.loop = true;
-                sourceBuffer.start(context.currentTime +backgroundDelay);
-	    	});
-	    };
-        request.send();
-
-        setInterval(update, 1000 / FPS);
-
-        function update()
-        {
-            ctx.fillStyle = "#333333";
-            ctx.fillRect(0, 0, canv.width, canv.height);
-
-            ctx.fillStyle = "white";
-            ctx.fillRect(0, 100, canv.width, 30);
-
-            for(var i = 0; i < platforms.length; i++)
-            {
-                platforms[i] = platforms[i] - 19;
-                if(platforms[i] <= -80 )platforms[i] = 960
-            }
-            for(var i = 0; i < platforms.length; i++)
-            {
-                ctx.fillStyle = "blue"; 
-                ctx.fillRect(platforms[i], 100, 50, 30);
-            }
-
-            ctx.strokeStyle = "red";
-            ctx.lineWidth = 7;
-            ctx.beginPath();
-            ctx.moveTo(200, 0);
-            ctx.lineTo(200, 150);
-            ctx.stroke();
-        }
-    </script>-->
 </body>
 </html>
