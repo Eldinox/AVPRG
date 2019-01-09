@@ -17,6 +17,7 @@ Insgesamt stehen 3 Level und 2 Lieder über das Hauptmenü zur Auswahl. Jedes Le
 
 
 Technische Umsetzung
+
 Das Hauptmenü besteht aus einer einzelnen Seite, die mit Overlays arbeitet um zum Beispiel ein Optionsfenster anzuzeigen. Die Buttons werden hier beim Hovern mit leichten Transition-Effekten animiert . Entscheidet man sich in der 
 Levelauswahl für ein Lied, wird man weitergeleitet und der URL erhält den Namen 
 des gewählten Levels als Anhang (zB. “game.html?WeWillRockYou”).
